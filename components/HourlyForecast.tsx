@@ -10,6 +10,7 @@ import IconSunrise from "@/assets/weather/wi-sunrise.svg";
 import IconSunset from "@/assets/weather/wi-sunset.svg";
 import { useUnits } from "@/contexts/UnitsContext";
 import { scaledFontSize } from "@/utils/fontScaling";
+import { formatNumber } from "@/utils/numberFormatting";
 
 interface HourlyForecastProps {
 	hourlyData?: WeatherData["hourly"];
@@ -34,68 +35,68 @@ const getVariableDataAndUnit = (
 	switch (variableName) {
 		case "Temp":
 			return {
-				value: hourlyData.temperature2m[index].toFixed(0),
+				value: formatNumber(hourlyData.temperature2m[index], 0),
 				unit: "°",
 			};
 		case "Feels Like":
 			return {
-				value: hourlyData.apparentTemperature[index].toFixed(0),
+				value: formatNumber(hourlyData.apparentTemperature[index], 0),
 				unit: "°",
 			};
 		case "Precip Chance":
 			return {
-				value: hourlyData.precipitationProbability[index].toFixed(0),
+				value: formatNumber(hourlyData.precipitationProbability[index], 0),
 				unit: "%",
 			};
 		case "Precip Amount":
 			return {
-				value: hourlyData.precipitation[index].toFixed(2),
+				value: formatNumber(hourlyData.precipitation[index], 2),
 				unit: precipitationUnit === "Millimeter" ? "mm" : "in",
 			};
 		case "Wind Speed":
 			return {
-				value: hourlyData.windSpeed10m[index].toFixed(0),
+				value: formatNumber(hourlyData.windSpeed10m[index], 0),
 				unit: windSpeedUnit,
 				windAngle: hourlyData.windDirection10m[index],
 			};
 		case "Wind Gusts":
 			return {
-				value: hourlyData.windGusts10m[index].toFixed(0),
+				value: formatNumber(hourlyData.windGusts10m[index], 0),
 				unit: windSpeedUnit,
 			};
 		case "UV Index":
 			return {
-				value: hourlyData.uvIndex[index].toFixed(1),
+				value: formatNumber(hourlyData.uvIndex[index], 1),
 				unit: "",
 			};
 		case "Humidity":
 			return {
-				value: hourlyData.relativeHumidity2m[index].toFixed(0),
+				value: formatNumber(hourlyData.relativeHumidity2m[index], 0),
 				unit: "%",
 			};
 		case "Dew Point":
 			return {
-				value: hourlyData.dewPoint2m[index].toFixed(0),
+				value: formatNumber(hourlyData.dewPoint2m[index], 0),
 				unit: "°",
 			};
 		case "Cloud Cover":
 			return {
-				value: hourlyData.cloudCover[index].toFixed(0),
+				value: formatNumber(hourlyData.cloudCover[index], 0),
 				unit: "%",
 			};
 		case "Visibility":
 			return {
-				value: (hourlyData.visibility[index] / 1000).toFixed(1),
+				value: formatNumber(hourlyData.visibility[index] / 1000, 1),
 				unit: "km",
 			};
 		case "Pressure":
 			return {
-				value: hourlyData.surfacePressure[index].toFixed(0),
+				value: formatNumber(hourlyData.surfacePressure[index], 0),
 				unit: "hPa",
 			};
 		default:
 			return {
-				value: hourlyData.temperature2m[index].toFixed(0),
+				value: formatNumber(hourlyData.temperature2m[index], 0),
 				unit: "°",
 			};
 	}
