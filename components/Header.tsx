@@ -5,6 +5,7 @@ import { router } from "expo-router";
 import { StyledText } from "./StyledText";
 import { HapticPressable } from "./HapticPressable";
 import { useInvertColors } from "@/contexts/InvertColorsContext";
+import { scaledFontSize } from "@/utils/fontScaling";
 
 interface HeaderProps {
 	iconName?: keyof typeof MaterialIcons.glyphMap;
@@ -115,7 +116,7 @@ const styles = StyleSheet.create({
 		zIndex: 1,
 	},
 	title: {
-		fontSize: 20,
+		fontSize: scaledFontSize(20),
 		fontFamily: "PublicSans-Regular",
 		paddingTop: 2,
 		maxWidth: "75%",

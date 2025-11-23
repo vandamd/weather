@@ -8,6 +8,7 @@ import {
 import { HapticPressable } from "./HapticPressable";
 import { useState } from "react";
 import { useInvertColors } from "@/contexts/InvertColorsContext";
+import { scaledFontSize } from "@/utils/fontScaling";
 
 const weatherVariables = [
 	"Temp",
@@ -63,6 +64,7 @@ const VariablePill = React.memo(function VariablePill({
 							color: invertColors ? "white" : "black",
 						},
 					]}
+					allowFontScaling={false}
 				>
 					{variable}
 				</DefaultText>
@@ -107,7 +109,7 @@ export default function WeatherVariableSelector({
 const styles = StyleSheet.create({
 	text: {
 		fontFamily: "PublicSans-Regular",
-		fontSize: 16,
+		fontSize: scaledFontSize(16),
 	},
 	pill: {
 		paddingVertical: 6,

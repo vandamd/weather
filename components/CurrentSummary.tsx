@@ -3,6 +3,7 @@ import { View, StyleSheet } from "react-native";
 import { useInvertColors } from "@/contexts/InvertColorsContext";
 import { StyledText } from "@/components/StyledText";
 import { getWeatherIcon } from "@/utils/weatherIconMap";
+import { scaledFontSize } from "@/utils/fontScaling";
 
 interface CurrentSummaryProps {
 	currentTemperature: number;
@@ -66,13 +67,13 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	currentTemperature: {
-		fontSize: 88,
+		fontSize: scaledFontSize(88),
 		lineHeight: 86,
 	},
 	apparentTemperature: {
-		fontSize: 20,
+		fontSize: scaledFontSize(20),
 	},
 	rangeTemperature: {
-		fontSize: 20,
+		fontSize: scaledFontSize(20),
 	},
 });

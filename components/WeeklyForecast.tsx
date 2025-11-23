@@ -6,6 +6,7 @@ import { getWeatherIcon } from "@/utils/weatherIconMap";
 import { WeatherData } from "@/utils/weather";
 import IconDirectionUp from "@/assets/weather/wi-direction-up.svg";
 import { useUnits } from "@/contexts/UnitsContext";
+import { scaledFontSize } from "@/utils/fontScaling";
 
 interface WeeklyForecastProps {
 	weeklyData?: WeatherData["daily"];
@@ -137,7 +138,7 @@ const WeeklyItem = React.memo(function WeeklyItem({
 				height={32}
 				fill={invertColors ? "black" : "white"}
 			/>
-			<StyledText style={{ fontSize: 20, paddingLeft: 8 }}>
+			<StyledText style={{ fontSize: scaledFontSize(20), paddingLeft: 8 }}>
 				{date.toLocaleDateString("en-US", {
 					weekday: "long",
 					timeZone: "UTC",
@@ -176,7 +177,7 @@ const WeeklyForecast = React.memo(function WeeklyForecast({
 	const units = useUnits();
 	return (
 		<View style={{ paddingTop: 16 }}>
-			<StyledText style={{ fontSize: 20, paddingBottom: 4 }}>
+			<StyledText style={{ fontSize: scaledFontSize(20), paddingBottom: 4 }}>
 				Weekly Forecast
 			</StyledText>
 			{weeklyData?.time.map((_, index) => {

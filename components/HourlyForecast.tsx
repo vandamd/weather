@@ -9,6 +9,7 @@ import IconDirectionUp from "@/assets/weather/wi-direction-up.svg";
 import IconSunrise from "@/assets/weather/wi-sunrise.svg";
 import IconSunset from "@/assets/weather/wi-sunset.svg";
 import { useUnits } from "@/contexts/UnitsContext";
+import { scaledFontSize } from "@/utils/fontScaling";
 
 interface HourlyForecastProps {
 	hourlyData?: WeatherData["hourly"];
@@ -133,7 +134,7 @@ const HourlyItem = React.memo(function HourlyItem({
 				height={32}
 				fill={invertColors ? "black" : "white"}
 			/>
-			<StyledText style={{ fontSize: 19, paddingLeft: 8 }}>
+			<StyledText style={{ fontSize: scaledFontSize(19), paddingLeft: 8 }}>
 				{time.toLocaleTimeString([], {
 					hour: "2-digit",
 					minute: "2-digit",
@@ -191,7 +192,7 @@ const SunEventItem = React.memo(function SunEventItem({
 				height={32}
 				fill={invertColors ? "black" : "white"}
 			/>
-			<StyledText style={{ fontSize: 19, paddingLeft: 8 }}>
+			<StyledText style={{ fontSize: scaledFontSize(19), paddingLeft: 8 }}>
 				{time.toLocaleTimeString([], {
 					hour: "2-digit",
 					minute: "2-digit",
@@ -214,7 +215,7 @@ const HourlyForecast = React.memo(function HourlyForecast({
 	const units = useUnits();
 	return (
 		<View style={{ paddingTop: 16 }}>
-			<StyledText style={{ fontSize: 19, paddingBottom: 4 }}>
+			<StyledText style={{ fontSize: scaledFontSize(19), paddingBottom: 4 }}>
 				Hourly Forecast
 			</StyledText>
 			{hourlyData?.time.map((_, index) => {

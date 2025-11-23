@@ -3,6 +3,7 @@ import { StyleSheet } from "react-native";
 import { StyledText } from "./StyledText";
 import { HapticPressable } from "./HapticPressable";
 import { router } from "expo-router";
+import { scaledFontSize } from "@/utils/fontScaling";
 
 interface SelectorButtonProps {
 	label: string;
@@ -38,13 +39,13 @@ const styles = StyleSheet.create({
 		gap: 0,
 	},
 	label: {
-		fontSize: 20,
+		fontSize: scaledFontSize(20),
 		paddingTop: 7.5,
 		lineHeight: 20,
 		fontFamily: "PublicSans-Regular",
 	},
 	buttonText: {
-		fontSize: 30,
+		fontSize: scaledFontSize(30),
 		paddingBottom: 10,
 	},
 });
