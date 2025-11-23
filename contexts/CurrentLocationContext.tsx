@@ -12,12 +12,17 @@ import { PermissionsAndroid, AppState, AppStateStatus } from "react-native";
 import Geolocation from "react-native-geolocation-service";
 import { getWeatherData, WeatherData } from "@/utils/weather";
 import { useUnits } from "./UnitsContext";
+import {
+	getCachedWeather,
+	setCachedWeather,
+} from "@/utils/weatherCache";
 
 interface CurrentLocationContextType {
 	currentLocation: string;
 	weatherData: WeatherData | null;
 	errorMsg: string | null;
 	dataLoaded: boolean;
+	lastUpdated: number | null;
 	refetchWeather: () => Promise<void>;
 }
 
@@ -26,6 +31,7 @@ const CurrentLocationContext = createContext<CurrentLocationContextType>({
 	weatherData: null,
 	errorMsg: null,
 	dataLoaded: false,
+	lastUpdated: null,
 	refetchWeather: async () => {},
 });
 
@@ -41,7 +47,23 @@ export const CurrentLocationProvider = ({
 	const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
 	const [errorMsg, setErrorMsg] = useState<string | null>(null);
 	const [dataLoaded, setDataLoaded] = useState(false);
+	const [lastUpdated, setLastUpdated] = useState<number | null>(null);
 	const appState = useRef(AppState.currentState);
+
+	// Load cached data immediately on mount
+	useEffect(() => {
+		const loadCache = async () => {
+			const cached = await getCachedWeather();
+			if (cached) {
+				setWeatherData(cached.data);
+				setLastUpdated(cached.timestamp);
+				setCurrentLocation("Current Location");
+				setDataLoaded(true);
+			}
+		};
+
+		loadCache();
+	}, []);
 
 	const fetchLocationAndWeather = useCallback(async () => {
 		if (!units.unitsLoaded) {
@@ -96,6 +118,17 @@ export const CurrentLocationProvider = ({
 			);
 			setWeatherData(data);
 			setErrorMsg(null); // Clear any previous errors
+
+			// Cache the fetched data
+			if (data) {
+				const timestamp = Date.now();
+				await setCachedWeather(
+					fetchedLocation.coords.latitude,
+					fetchedLocation.coords.longitude,
+					data
+				);
+				setLastUpdated(timestamp);
+			}
 		} catch (error: any) {
 			if (error.code && error.message) {
 				setErrorMsg(`Error (code ${error.code}): ${error.message}`);
@@ -148,9 +181,10 @@ export const CurrentLocationProvider = ({
 			weatherData,
 			errorMsg,
 			dataLoaded,
+			lastUpdated,
 			refetchWeather: fetchLocationAndWeather,
 		}),
-		[currentLocation, weatherData, errorMsg, dataLoaded, fetchLocationAndWeather]
+		[currentLocation, weatherData, errorMsg, dataLoaded, lastUpdated, fetchLocationAndWeather]
 	);
 
 	return (
