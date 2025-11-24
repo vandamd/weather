@@ -2,7 +2,7 @@
 	"expo": {
 		"name": "Weather",
 		"slug": "weather",
-		"version": "1.0.4",
+		"version": "1.1.0",
 		"orientation": "portrait",
 		"scheme": "weather",
 		"newArchEnabled": true,

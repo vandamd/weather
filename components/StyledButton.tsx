@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet } from "react-native";
 import { StyledText } from "./StyledText";
 import { HapticPressable } from "./HapticPressable";
+import { scaledFontSize } from "@/utils/fontScaling";
 
 interface ButtonProps {
 	text: string;
@@ -21,7 +22,7 @@ export function StyledButton({
 			<StyledText
 				style={[
 					styles.buttonText,
-					{ fontSize: fontSize },
+					{ fontSize: scaledFontSize(fontSize) },
 					underline && styles.underline,
 				]}
 				numberOfLines={1}
@@ -39,7 +40,7 @@ const styles = StyleSheet.create({
 		alignItems: "flex-start",
 	},
 	buttonText: {
-		fontSize: 30,
+		fontSize: scaledFontSize(30),
 	},
 	underline: {
 		textDecorationLine: "underline",

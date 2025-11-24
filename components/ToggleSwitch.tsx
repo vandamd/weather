@@ -3,6 +3,7 @@ import { View, StyleSheet } from "react-native";
 import { StyledText } from "./StyledText";
 import { HapticPressable } from "./HapticPressable";
 import { useInvertColors } from "@/contexts/InvertColorsContext";
+import { scaledFontSize } from "@/utils/fontScaling";
 
 interface ToggleSwitchGraphicProps {
 	value: boolean;
@@ -106,6 +107,6 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	label: {
-		fontSize: 30,
+		fontSize: scaledFontSize(30),
 	},
 });

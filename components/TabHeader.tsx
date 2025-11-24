@@ -5,6 +5,7 @@ import { StyledText } from "./StyledText";
 import { HapticPressable } from "./HapticPressable";
 import { useRouter } from "expo-router";
 import { useInvertColors } from "@/contexts/InvertColorsContext";
+import { scaledFontSize } from "@/utils/fontScaling";
 
 interface TabHeaderProps {
 	leftIconName?: keyof typeof MaterialIcons.glyphMap;
@@ -83,7 +84,7 @@ const styles = StyleSheet.create({
 		zIndex: 1,
 	},
 	title: {
-		fontSize: 20,
+		fontSize: scaledFontSize(20),
 		fontFamily: "PublicSans-Regular",
 	},
 });

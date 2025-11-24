@@ -6,6 +6,8 @@ import { getWeatherIcon } from "@/utils/weatherIconMap";
 import { WeatherData } from "@/utils/weather";
 import IconDirectionUp from "@/assets/weather/wi-direction-up.svg";
 import { useUnits } from "@/contexts/UnitsContext";
+import { scaledFontSize } from "@/utils/fontScaling";
+import { formatNumber } from "@/utils/numberFormatting";
 
 interface WeeklyForecastProps {
 	weeklyData?: WeatherData["daily"];
@@ -31,74 +33,74 @@ const getDailyVariableData = (
 	switch (variableName) {
 		case "Temp":
 			return {
-				value: dailyData.temperature2mMin[index].toFixed(0),
+				value: formatNumber(dailyData.temperature2mMin[index], 0),
 				unit: "°",
-				value2: dailyData.temperature2mMax[index].toFixed(0),
+				value2: formatNumber(dailyData.temperature2mMax[index], 0),
 				unit2: "°",
 			};
 		case "Feels Like":
 			return {
-				value: dailyData.apparentTemperatureMin[index].toFixed(0),
+				value: formatNumber(dailyData.apparentTemperatureMin[index], 0),
 				unit: "°",
-				value2: dailyData.apparentTemperatureMax[index].toFixed(0),
+				value2: formatNumber(dailyData.apparentTemperatureMax[index], 0),
 				unit2: "°",
 			};
 		case "Precip Chance":
 			return {
-				value: dailyData.precipitationProbabilityMax[index].toFixed(0),
+				value: formatNumber(dailyData.precipitationProbabilityMax[index], 0),
 				unit: "%",
 			};
 		case "Precip Amount":
 			return {
-				value: dailyData.precipitationSum[index].toFixed(2),
+				value: formatNumber(dailyData.precipitationSum[index], 2),
 				unit: precipitationUnit === "Millimeter" ? "mm" : "in",
 			};
 		case "Wind Speed":
 			return {
-				value: dailyData.windSpeed10mMax[index].toFixed(0),
+				value: formatNumber(dailyData.windSpeed10mMax[index], 0),
 				unit: windSpeedUnit,
 				windAngle: dailyData.windDirection10mDominant[index],
 			};
 		case "Wind Gusts":
 			return {
-				value: dailyData.windGusts10mMax[index].toFixed(0),
+				value: formatNumber(dailyData.windGusts10mMax[index], 0),
 				unit: windSpeedUnit,
 			};
 		case "UV Index":
 			return {
-				value: dailyData.uvIndexMax[index].toFixed(1),
+				value: formatNumber(dailyData.uvIndexMax[index], 1),
 				unit: "",
 			};
 		case "Humidity":
 			return {
-				value: dailyData.relativeHumidity2mMean[index].toFixed(0),
+				value: formatNumber(dailyData.relativeHumidity2mMean[index], 0),
 				unit: "%",
 			};
 		case "Dew Point":
 			return {
-				value: dailyData.dewPoint2mMean[index].toFixed(0),
+				value: formatNumber(dailyData.dewPoint2mMean[index], 0),
 				unit: "°",
 			};
 		case "Cloud Cover":
 			return {
-				value: dailyData.cloudCoverMean[index].toFixed(0),
+				value: formatNumber(dailyData.cloudCoverMean[index], 0),
 				unit: "%",
 			};
 		case "Visibility":
 			return {
-				value: (dailyData.visibilityMean[index] / 1000).toFixed(1),
+				value: formatNumber(dailyData.visibilityMean[index] / 1000, 1),
 				unit: "km",
 			};
 		case "Pressure":
 			return {
-				value: dailyData.surfacePressureMean[index].toFixed(0),
+				value: formatNumber(dailyData.surfacePressureMean[index], 0),
 				unit: "hPa",
 			};
 		default:
 			return {
-				value: dailyData.temperature2mMin[index].toFixed(0),
+				value: formatNumber(dailyData.temperature2mMin[index], 0),
 				unit: "°",
-				value2: dailyData.temperature2mMax[index].toFixed(0),
+				value2: formatNumber(dailyData.temperature2mMax[index], 0),
 				unit2: "°",
 			};
 	}
@@ -137,7 +139,7 @@ const WeeklyItem = React.memo(function WeeklyItem({
 				height={32}
 				fill={invertColors ? "black" : "white"}
 			/>
-			<StyledText style={{ fontSize: 20, paddingLeft: 8 }}>
+			<StyledText style={{ fontSize: scaledFontSize(20), paddingLeft: 8 }}>
 				{date.toLocaleDateString("en-US", {
 					weekday: "long",
 					timeZone: "UTC",
@@ -176,7 +178,7 @@ const WeeklyForecast = React.memo(function WeeklyForecast({
 	const units = useUnits();
 	return (
 		<View style={{ paddingTop: 16 }}>
-			<StyledText style={{ fontSize: 20, paddingBottom: 4 }}>
+			<StyledText style={{ fontSize: scaledFontSize(20), paddingBottom: 4 }}>
 				Weekly Forecast
 			</StyledText>
 			{weeklyData?.time.map((_, index) => {

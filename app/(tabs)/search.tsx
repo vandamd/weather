@@ -16,6 +16,7 @@ import CustomScrollView from "@/components/CustomScrollView";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { HapticPressable } from "@/components/HapticPressable";
+import { scaledFontSize } from "@/utils/fontScaling";
 
 export default function SearchScreen() {
 	const [searchQuery, setSearchQuery] = useState("");
@@ -80,6 +81,7 @@ export default function SearchScreen() {
 					onChangeText={setSearchQuery}
 					cursorColor={invertColors ? "black" : "white"}
 					selectionColor={invertColors ? "black" : "white"}
+					allowFontScaling={false}
 					onSubmitEditing={() => {
 						if (searchQuery.length > 0) {
 							router.push(
@@ -115,6 +117,7 @@ export default function SearchScreen() {
 							styles.savedLocationsTitle,
 							{ color: invertColors ? "black" : "white" },
 						]}
+						allowFontScaling={false}
 					>
 						Saved Locations
 					</Text>
@@ -154,7 +157,7 @@ const styles = StyleSheet.create({
 	},
 	input: {
 		flex: 1,
-		fontSize: 24,
+		fontSize: scaledFontSize(24),
 		fontFamily: "PublicSans-Regular",
 		paddingVertical: 2,
 		textAlign: "left",
@@ -167,7 +170,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	savedLocationsTitle: {
-		fontSize: 20,
+		fontSize: scaledFontSize(20),
 		fontFamily: "PublicSans-Regular",
 		marginBottom: 4,
 	},

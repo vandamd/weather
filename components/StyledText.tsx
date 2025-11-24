@@ -15,6 +15,7 @@ export function StyledText({ style, ...rest }: StyledTextProps) {
 				style,
 				{ color: invertColors ? "black" : "white" },
 			]}
+			allowFontScaling={false}
 			{...rest}
 		/>
 	);
