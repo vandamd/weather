@@ -3,6 +3,7 @@ import { View, StyleSheet, StyleProp, ViewStyle } from "react-native";
 import { Header } from "@/components/Header";
 import { useInvertColors } from "@/contexts/InvertColorsContext";
 import { MaterialIcons } from "@expo/vector-icons";
+import { normalizedSize } from "@/utils/fontScaling";
 
 interface ContentContainerProps {
 	headerTitle?: string;
@@ -53,8 +54,8 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: "flex-start",
 		alignItems: "flex-start",
-		paddingHorizontal: 37,
-		paddingTop: 14,
-		gap: 47,
+		paddingHorizontal: normalizedSize(37),
+		paddingTop: normalizedSize(14),
+		gap: normalizedSize(47),
 	},
 });

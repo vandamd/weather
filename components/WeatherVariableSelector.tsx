@@ -8,7 +8,7 @@ import {
 import { HapticPressable } from "./HapticPressable";
 import { useState } from "react";
 import { useInvertColors } from "@/contexts/InvertColorsContext";
-import { scaledFontSize } from "@/utils/fontScaling";
+import { scaledFontSize, normalizedSize } from "@/utils/fontScaling";
 
 const weatherVariables = [
 	"Temp",
@@ -91,7 +91,7 @@ export default function WeatherVariableSelector({
 			horizontal
 			showsHorizontalScrollIndicator={false}
 			overScrollMode="never"
-			style={{ paddingTop: 32, paddingBottom: 1 }}
+			style={{ paddingTop: normalizedSize(32), paddingBottom: normalizedSize(1) }}
 		>
 			{weatherVariables.map((variable) => (
 				<VariablePill
@@ -112,10 +112,10 @@ const styles = StyleSheet.create({
 		fontSize: scaledFontSize(16),
 	},
 	pill: {
-		paddingVertical: 6,
-		paddingHorizontal: 14,
-		borderRadius: 20,
-		borderWidth: 1,
-		marginRight: 6,
+		paddingVertical: normalizedSize(6),
+		paddingHorizontal: normalizedSize(14),
+		borderRadius: normalizedSize(20),
+		borderWidth: normalizedSize(1),
+		marginRight: normalizedSize(6),
 	},
 });

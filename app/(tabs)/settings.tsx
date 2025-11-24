@@ -4,6 +4,7 @@ import { useInvertColors } from "@/contexts/InvertColorsContext";
 import { SelectorButton } from "@/components/SelectorButton";
 import { useUnits } from "@/contexts/UnitsContext";
 import * as Application from "expo-application";
+import { normalizedSize } from "@/utils/fontScaling";
 
 export default function SettingsScreen() {
 	const { invertColors, setInvertColors } = useInvertColors();
@@ -14,7 +15,7 @@ export default function SettingsScreen() {
 		<ContentContainer
 			headerTitle={`Weather Settings (v${version})`}
 			hideBackButton={true}
-			style={{ gap: 20 }}
+			style={{ gap: normalizedSize(20) }}
 		>
 			<SelectorButton
 				label="Temperature Unit"

@@ -9,7 +9,7 @@ import IconDirectionUp from "@/assets/weather/wi-direction-up.svg";
 import IconSunrise from "@/assets/weather/wi-sunrise.svg";
 import IconSunset from "@/assets/weather/wi-sunset.svg";
 import { useUnits } from "@/contexts/UnitsContext";
-import { scaledFontSize } from "@/utils/fontScaling";
+import { scaledFontSize, normalizedSize } from "@/utils/fontScaling";
 import { formatNumber } from "@/utils/numberFormatting";
 
 interface HourlyForecastProps {
@@ -131,11 +131,11 @@ const HourlyItem = React.memo(function HourlyItem({
 	return (
 		<View style={styles.hourlyItem}>
 			<WeatherIconComponent
-				width={32}
-				height={32}
+				width={normalizedSize(32)}
+				height={normalizedSize(32)}
 				fill={invertColors ? "black" : "white"}
 			/>
-			<StyledText style={{ fontSize: scaledFontSize(19), paddingLeft: 8 }}>
+			<StyledText style={{ fontSize: scaledFontSize(19), paddingLeft: normalizedSize(8) }}>
 				{time.toLocaleTimeString([], {
 					hour: "2-digit",
 					minute: "2-digit",
@@ -151,7 +151,7 @@ const HourlyItem = React.memo(function HourlyItem({
 					<View
 						style={[
 							{
-								marginLeft: 5,
+								marginLeft: normalizedSize(5),
 								flexDirection: "row",
 								alignItems: "center",
 							},
@@ -161,8 +161,8 @@ const HourlyItem = React.memo(function HourlyItem({
 						]}
 					>
 						<IconDirectionUp
-							width={20}
-							height={20}
+							width={normalizedSize(20)}
+							height={normalizedSize(20)}
 							fill={invertColors ? "black" : "white"}
 						/>
 					</View>
@@ -189,11 +189,11 @@ const SunEventItem = React.memo(function SunEventItem({
 	return (
 		<View style={styles.hourlyItem}>
 			<IconComponent
-				width={32}
-				height={32}
+				width={normalizedSize(32)}
+				height={normalizedSize(32)}
 				fill={invertColors ? "black" : "white"}
 			/>
-			<StyledText style={{ fontSize: scaledFontSize(19), paddingLeft: 8 }}>
+			<StyledText style={{ fontSize: scaledFontSize(19), paddingLeft: normalizedSize(8) }}>
 				{time.toLocaleTimeString([], {
 					hour: "2-digit",
 					minute: "2-digit",
@@ -215,8 +215,8 @@ const HourlyForecast = React.memo(function HourlyForecast({
 	const { invertColors } = useInvertColors();
 	const units = useUnits();
 	return (
-		<View style={{ paddingTop: 16 }}>
-			<StyledText style={{ fontSize: scaledFontSize(19), paddingBottom: 4 }}>
+		<View style={{ paddingTop: normalizedSize(16) }}>
+			<StyledText style={{ fontSize: scaledFontSize(19), paddingBottom: normalizedSize(4) }}>
 				Hourly Forecast
 			</StyledText>
 			{hourlyData?.time.map((_, index) => {

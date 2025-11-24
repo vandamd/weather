@@ -3,7 +3,7 @@ import { View, StyleSheet } from "react-native";
 import { useInvertColors } from "@/contexts/InvertColorsContext";
 import { StyledText } from "@/components/StyledText";
 import { getWeatherIcon } from "@/utils/weatherIconMap";
-import { scaledFontSize } from "@/utils/fontScaling";
+import { scaledFontSize, normalizedSize } from "@/utils/fontScaling";
 import { formatNumber } from "@/utils/numberFormatting";
 
 interface CurrentSummaryProps {
@@ -29,8 +29,8 @@ export default function CurrentSummary({
 		<View style={styles.container}>
 			<View style={styles.topHalf}>
 				<WeatherIcon
-					width={100}
-					height={100}
+					width={normalizedSize(100)}
+					height={normalizedSize(100)}
 					fill={invertColors ? "black" : "white"}
 				/>
 				<StyledText style={styles.currentTemperature}>
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		justifyContent: "center",
 		alignItems: "center",
-		gap: 4,
+		gap: normalizedSize(4),
 	},
 	bottomHalf: {
 		flexDirection: "row",
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
 	},
 	currentTemperature: {
 		fontSize: scaledFontSize(88),
-		lineHeight: 86,
+		lineHeight: normalizedSize(86),
 	},
 	apparentTemperature: {
 		fontSize: scaledFontSize(20),

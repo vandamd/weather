@@ -16,7 +16,7 @@ import CustomScrollView from "@/components/CustomScrollView";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { HapticPressable } from "@/components/HapticPressable";
-import { scaledFontSize } from "@/utils/fontScaling";
+import { scaledFontSize, normalizedSize } from "@/utils/fontScaling";
 
 export default function SearchScreen() {
 	const [searchQuery, setSearchQuery] = useState("");
@@ -104,7 +104,7 @@ export default function SearchScreen() {
 					>
 						<MaterialIcons
 							name="clear"
-							size={24}
+							size={normalizedSize(24)}
 							color={invertColors ? "black" : "white"}
 						/>
 					</HapticPressable>
@@ -125,7 +125,7 @@ export default function SearchScreen() {
 						{savedLocations.map((location) => (
 							<View
 								key={location.id}
-								style={{ marginBottom: 15 }}
+								style={{ marginBottom: normalizedSize(15) }}
 							>
 								<StyledButton
 									text={`${location.name}${
@@ -153,18 +153,18 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		alignItems: "center",
 		width: "100%",
-		borderBottomWidth: 1,
+		borderBottomWidth: normalizedSize(1),
 	},
 	input: {
 		flex: 1,
 		fontSize: scaledFontSize(24),
 		fontFamily: "PublicSans-Regular",
-		paddingVertical: 2,
+		paddingVertical: normalizedSize(2),
 		textAlign: "left",
-		paddingBottom: 6,
+		paddingBottom: normalizedSize(6),
 	},
 	clearButton: {
-		padding: 5,
+		padding: normalizedSize(5),
 	},
 	savedLocationsContainer: {
 		flex: 1,
@@ -172,6 +172,6 @@ const styles = StyleSheet.create({
 	savedLocationsTitle: {
 		fontSize: scaledFontSize(20),
 		fontFamily: "PublicSans-Regular",
-		marginBottom: 4,
+		marginBottom: normalizedSize(4),
 	},
 });

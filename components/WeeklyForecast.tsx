@@ -6,7 +6,7 @@ import { getWeatherIcon } from "@/utils/weatherIconMap";
 import { WeatherData } from "@/utils/weather";
 import IconDirectionUp from "@/assets/weather/wi-direction-up.svg";
 import { useUnits } from "@/contexts/UnitsContext";
-import { scaledFontSize } from "@/utils/fontScaling";
+import { scaledFontSize, normalizedSize } from "@/utils/fontScaling";
 import { formatNumber } from "@/utils/numberFormatting";
 
 interface WeeklyForecastProps {
@@ -135,11 +135,11 @@ const WeeklyItem = React.memo(function WeeklyItem({
 	return (
 		<View style={styles.hourlyItem}>
 			<WeatherIconComponent
-				width={32}
-				height={32}
+				width={normalizedSize(32)}
+				height={normalizedSize(32)}
 				fill={invertColors ? "black" : "white"}
 			/>
-			<StyledText style={{ fontSize: scaledFontSize(20), paddingLeft: 8 }}>
+			<StyledText style={{ fontSize: scaledFontSize(20), paddingLeft: normalizedSize(8) }}>
 				{date.toLocaleDateString("en-US", {
 					weekday: "long",
 					timeZone: "UTC",
@@ -159,8 +159,8 @@ const WeeklyItem = React.memo(function WeeklyItem({
 						]}
 					>
 						<IconDirectionUp
-							width={20}
-							height={20}
+							width={normalizedSize(20)}
+							height={normalizedSize(20)}
 							fill={invertColors ? "black" : "white"}
 						/>
 					</View>
@@ -177,8 +177,8 @@ const WeeklyForecast = React.memo(function WeeklyForecast({
 	const { invertColors } = useInvertColors();
 	const units = useUnits();
 	return (
-		<View style={{ paddingTop: 16 }}>
-			<StyledText style={{ fontSize: scaledFontSize(20), paddingBottom: 4 }}>
+		<View style={{ paddingTop: normalizedSize(16) }}>
+			<StyledText style={{ fontSize: scaledFontSize(20), paddingBottom: normalizedSize(4) }}>
 				Weekly Forecast
 			</StyledText>
 			{weeklyData?.time.map((_, index) => {

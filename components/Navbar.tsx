@@ -4,6 +4,7 @@ import { StyleSheet, View } from "react-native";
 import { HapticPressable } from "./HapticPressable";
 import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { useInvertColors } from "@/contexts/InvertColorsContext";
+import { normalizedSize } from "@/utils/fontScaling";
 
 export interface TabConfigItem {
 	name: string;
@@ -39,7 +40,7 @@ export function Navbar({
 				>
 					<MaterialIcons
 						name={tab.iconName}
-						size={48}
+						size={normalizedSize(48)}
 						color={
 							tab.screenName === currentScreenName
 								? invertColors
@@ -61,7 +62,7 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "space-between",
-		paddingVertical: 11,
-		paddingHorizontal: 20,
+		paddingVertical: normalizedSize(11),
+		paddingHorizontal: normalizedSize(20),
 	},
 });

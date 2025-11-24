@@ -5,7 +5,7 @@ import { router } from "expo-router";
 import { StyledText } from "./StyledText";
 import { HapticPressable } from "./HapticPressable";
 import { useInvertColors } from "@/contexts/InvertColorsContext";
-import { scaledFontSize } from "@/utils/fontScaling";
+import { scaledFontSize, normalizedSize } from "@/utils/fontScaling";
 
 interface HeaderProps {
 	iconName?: keyof typeof MaterialIcons.glyphMap;
@@ -44,16 +44,16 @@ export function Header({
 				<HapticPressable onPress={handleBack}>
 					<View
 						style={{
-							width: 32,
-							height: 32,
+							width: normalizedSize(32),
+							height: normalizedSize(32),
 							alignItems: "center",
-							paddingTop: 6,
-							paddingRight: 4,
+							paddingTop: normalizedSize(6),
+							paddingRight: normalizedSize(4),
 						}}
 					>
 						<MaterialIcons
 							name="arrow-back-ios"
-							size={28}
+							size={normalizedSize(28)}
 							color={invertColors ? "black" : "white"}
 						/>
 					</View>
@@ -61,11 +61,11 @@ export function Header({
 			) : (
 				<View
 					style={{
-						width: 32,
-						height: 32,
+						width: normalizedSize(32),
+						height: normalizedSize(32),
 						alignItems: "center",
-						paddingTop: 6,
-						paddingRight: 4,
+						paddingTop: normalizedSize(6),
+						paddingRight: normalizedSize(4),
 					}}
 				></View>
 			)}
@@ -77,16 +77,16 @@ export function Header({
 				<HapticPressable onPress={onIconPress}>
 					<View
 						style={{
-							width: 32,
-							height: 32,
+							width: normalizedSize(32),
+							height: normalizedSize(32),
 							alignItems: "center",
-							paddingTop: 6,
-							paddingLeft: 4,
+							paddingTop: normalizedSize(6),
+							paddingLeft: normalizedSize(4),
 						}}
 					>
 						<MaterialIcons
 							name={iconName}
-							size={28}
+							size={normalizedSize(28)}
 							color={invertColors ? "black" : "white"}
 						/>
 					</View>
@@ -94,11 +94,11 @@ export function Header({
 			) : (
 				<View
 					style={{
-						width: 32,
-						height: 32,
+						width: normalizedSize(32),
+						height: normalizedSize(32),
 						alignItems: "center",
-						paddingTop: 6,
-						paddingLeft: 4,
+						paddingTop: normalizedSize(6),
+						paddingLeft: normalizedSize(4),
 					}}
 				></View>
 			)}
@@ -111,14 +111,14 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "space-between",
-		paddingHorizontal: 22,
-		paddingVertical: 5,
+		paddingHorizontal: normalizedSize(22),
+		paddingVertical: normalizedSize(5),
 		zIndex: 1,
 	},
 	title: {
 		fontSize: scaledFontSize(20),
 		fontFamily: "PublicSans-Regular",
-		paddingTop: 2,
+		paddingTop: normalizedSize(2),
 		maxWidth: "75%",
 	},
 });
