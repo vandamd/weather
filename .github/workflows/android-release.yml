@@ -54,5 +54,3 @@ jobs:
         with:
           tag_name: v${{ env.VERSION }}
           files: weather_${{ env.VERSION }}.apk
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
