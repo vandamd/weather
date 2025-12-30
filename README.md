@@ -1,28 +1,29 @@
-# Weather
+<img src="assets/images/example.png" alt="Weather Screenshots">
 
-![Home Screen](assets/images/example.png)
+<p>An app for the Light Phone III to check the weather.</p>
 
-An app for the Light Phone III to check the weather.
-
-Weather API: [Open-meteo](https://open-meteo.com/)
-
-Weather Icons: [erikflowers/weather-icons](https://github.com/erikflowers/weather-icons)
-
-Font: [Public Sans](https://public-sans.digital.gov/)
-
-## Building
-
-You can build the .apk with:
-
-```bash
-eas build -p android --profile production --local
-```
-
-You may need to run `npm install` and `npx expo prebuild --platform android --clean` first.
+![GitHub License](https://img.shields.io/github/license/vandamd/weather)
+![GitHub Release](https://img.shields.io/github/v/release/vandamd/weather)
 
 ## Installation
+The lastest .apk file is available in [releases](https://github.com/vandamd/weather/releases/latest).
 
-1. Grab the .apk file from [latest release](https://github.com/vandamd/weather/releases/latest).
-2. Install the apk how you like! I prefer via adb, e.g. `adb install weatherv1.0.0.apk`.
+I recommend using [Obtainium](https://github.com/ImranR98/Obtainium) and adding the repository's URL to receive updates.
 
-Note: Developer mode needs to be enabled on the Light Phone III to install third-party apps.
+## Features
+- Current weather conditions
+- Hourly and weekly forecasts
+- Search and save multiple locations
+- Customisable units (temperature, precipitation, wind speed)
+- Current location support
+- Open-source and private (no tracking, no account required)
+
+## Acknowledgements
+Huge thank you to the following projects:
+- Weather API: [Open-meteo](https://open-meteo.com/)
+- Weather Icons: [erikflowers/weather-icons](https://github.com/erikflowers/weather-icons)
+
+## Support
+Weather is developed and maintained in my free time.
+
+If you find it useful, please [consider sponsoring](https://github.com/sponsors/vandamd)! :)
