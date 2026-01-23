@@ -8,13 +8,18 @@ interface ButtonProps {
     text: string;
     onPress?: () => void;
     underline?: boolean;
+    fontSize?: number;
 }
 
-export function StyledButton({ text, onPress, underline = false }: ButtonProps) {
+export function StyledButton({ text, onPress, underline = false, fontSize }: ButtonProps) {
     return (
         <HapticPressable style={styles.button} onPress={onPress}>
             <StyledText
-                style={[styles.buttonText, underline && styles.underline]}
+                style={[
+                    styles.buttonText,
+                    underline && styles.underline,
+                    fontSize ? { fontSize: n(fontSize) } : undefined
+                ]}
                 numberOfLines={1}
             >
                 {text}

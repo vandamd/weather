@@ -8,14 +8,16 @@ import { n } from "@/utils/scaling";
 interface SelectorButtonProps {
     label: string;
     value: string;
-    href: string;
+    valueChangePage?: string;
+    href?: string;
 }
 
-export function SelectorButton({ label, value, href }: SelectorButtonProps) {
+export function SelectorButton({ label, value, valueChangePage, href }: SelectorButtonProps) {
+    const targetPath = valueChangePage || href;
     return (
         <HapticPressable
             style={styles.button}
-            onPress={() => router.push(href as any)}
+            onPress={() => targetPath && router.push(targetPath as any)}
         >
             <StyledText style={styles.label} numberOfLines={1}>
                 {label}

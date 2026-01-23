@@ -1,32 +1,123 @@
 import ContentContainer from "@/components/ContentContainer";
-import { StyledButton } from "@/components/StyledButton";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useState, useEffect } from "react";
+import { View } from "react-native";
+import CurrentSummary from "@/components/CurrentSummary";
+import HourlyForecast from "@/components/HourlyForecast";
+import WeeklyForecast from "@/components/WeeklyForecast";
+import WeatherVariableSelector from "@/components/WeatherVariableSelector";
 import CustomScrollView from "@/components/CustomScrollView";
-import { n } from "@/utils/scaling";
+import { useCurrentLocation } from "@/contexts/CurrentLocationContext";
+import { useInvertColors } from "@/contexts/InvertColorsContext";
 
-const buttons = [
-    { id: "1", text: "Test Button 1" },
-    { id: "2", text: "Test Button 2" },
-    { id: "3", text: "Test Button 3" },
-    { id: "4", text: "Test Button 4" },
-    { id: "5", text: "Test Button 5" },
-    { id: "6", text: "Test Button 6" },
-    { id: "7", text: "Test Button 7" },
-    { id: "8", text: "Test Button 8" },
-    { id: "9", text: "Test Button 9" },
-    { id: "10", text: "Test Button 10" },
-];
+/**
+ * Format time difference for display
+ */
+function formatTimeSince(timestamp: number): string {
+	const now = Date.now();
+	const diff = now - timestamp;
 
-export default function Tab() {
-    return (
-        <ContentContainer headerTitle="Liked Songs" hideBackButton style={{ paddingHorizontal: n(20) }}>
-            <CustomScrollView
-                data={buttons}
-                renderItem={({ item }) => (
-                    <StyledButton text={item.text} />
-                )}
-                keyExtractor={(item) => item.id}
-                contentContainerStyle={{ gap: n(28) }}
-            />
-        </ContentContainer>
-    );
+	const seconds = Math.floor(diff / 1000);
+	const minutes = Math.floor(seconds / 60);
+	const hours = Math.floor(minutes / 60);
+	const days = Math.floor(hours / 24);
+
+	if (days > 0) {
+		return `${days}d ago`;
+	} else if (hours > 0) {
+		return `${hours}h ago`;
+	} else if (minutes > 0) {
+		return `${minutes}m ago`;
+	} else {
+		return "just now";
+	}
+}
+
+export default function CurrentLocationScreen() {
+	const {
+		currentLocation,
+		weatherData,
+		errorMsg,
+		dataLoaded,
+		lastUpdated,
+		refetchWeather,
+	} = useCurrentLocation();
+	const { invertColors } = useInvertColors();
+	const [selectedWeatherVariable, setSelectedWeatherVariable] =
+		useState<string>("Temp");
+	const [headerTitle, setHeaderTitle] = useState<string>(
+		currentLocation?.toString() || ""
+	);
+
+	// Update header with timestamp every minute
+	useEffect(() => {
+		const updateHeader = () => {
+			if (lastUpdated) {
+				const timeAgo = formatTimeSince(lastUpdated);
+				setHeaderTitle(`${currentLocation} (${timeAgo})`);
+			} else {
+				setHeaderTitle(currentLocation?.toString() || "");
+			}
+		};
+
+		updateHeader();
+		const interval = setInterval(updateHeader, 60000); // Update every minute
+
+		return () => clearInterval(interval);
+	}, [currentLocation, lastUpdated]);
+
+	useFocusEffect(
+		useCallback(() => {
+			if (dataLoaded) {
+				refetchWeather();
+			}
+		}, [dataLoaded, refetchWeather])
+	);
+
+	// Show blank screen with correct background color while loading
+	if (!dataLoaded) {
+		return (
+			<View
+				style={{
+					flex: 1,
+					backgroundColor: invertColors ? "white" : "black",
+				}}
+			/>
+		);
+	}
+
+	return weatherData ? (
+		<ContentContainer headerTitle={headerTitle} hideBackButton={true}>
+			<CustomScrollView style={{ width: "100%" }} overScrollMode="never">
+				<CurrentSummary
+					currentTemperature={weatherData?.current.temperature2m ?? 0}
+					apparentTemperature={
+						weatherData?.current.apparentTemperature ?? 0
+					}
+					maxTemperature={
+						weatherData?.daily.temperature2mMax?.[0] as number
+					}
+					minTemperature={
+						weatherData?.daily.temperature2mMin?.[0] as number
+					}
+					weatherCode={weatherData?.current.weatherCode ?? 0}
+					isDay={weatherData?.current.isDay ?? 0}
+				/>
+				<WeatherVariableSelector
+					onSelectionChange={setSelectedWeatherVariable}
+				/>
+				<HourlyForecast
+					hourlyData={weatherData?.hourly}
+					dailyData={weatherData?.daily}
+					selectedWeatherVariable={selectedWeatherVariable}
+				/>
+				<WeeklyForecast
+					weeklyData={weatherData?.daily}
+					selectedWeatherVariable={selectedWeatherVariable}
+				/>
+			</CustomScrollView>
+		</ContentContainer>
+	) : (
+		<ContentContainer headerTitle={headerTitle} hideBackButton={true}></ContentContainer>
+	);
 }

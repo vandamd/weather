@@ -253,24 +253,24 @@ function isValidTemperatureUnit(value: string): value is TemperatureUnit {
 ### Phase 3: Build Screens and Routes
 
 **Tab layout:**
-- [ ] Create app/(tabs)/_layout.tsx with tab config
-- [ ] Create app/index.tsx with redirect to /(tabs)/
+- [x] Create app/(tabs)/_layout.tsx with tab config
+- [x] Create app/index.tsx with redirect to /(tabs)/
 
 **Main screens:**
-- [ ] Copy (tabs)/current-location.tsx → index.tsx
-- [ ] Copy (tabs)/search.tsx
-- [ ] Copy (tabs)/settings.tsx
+- [x] Copy (tabs)/current-location.tsx → index.tsx
+- [x] Copy (tabs)/search.tsx
+- [x] Copy (tabs)/settings.tsx
 
 **Nested routes:**
-- [ ] Create search/_layout.tsx (Stack navigator)
-- [ ] Copy search/results.tsx, search/weather.tsx
-- [ ] Create settings/_layout.tsx (Stack navigator)
-- [ ] Copy settings/temperature-unit.tsx, wind-speed-unit.tsx, precipitation-unit.tsx
+- [x] Create search/_layout.tsx (Stack navigator)
+- [x] Copy search/results.tsx, search/weather.tsx
+- [x] Create settings/_layout.tsx (Stack navigator)
+- [x] Copy settings/temperature-unit.tsx, wind-speed-unit.tsx, precipitation-unit.tsx
 
 **Root layout:**
-- [ ] Update app/_layout.tsx with provider chain
-- [ ] Add font loading with SplashScreen
-- [ ] Configure status bar and system UI
+- [x] Update app/_layout.tsx with provider chain
+- [x] Add font loading with SplashScreen
+- [x] Configure status bar and system UI
 
 **Research Insights:**
 
