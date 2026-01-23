@@ -304,23 +304,23 @@ export default function SettingsLayout() {
 ### Phase 4: Test, Fix, Polish
 
 **Functional testing:**
-- [ ] Test location permission flow
-- [ ] Test weather data fetching and display
-- [ ] Test all unit conversions
-- [ ] Test theme toggle (invert colors)
-- [ ] Test tab navigation
-- [ ] Test settings persistence
-- [ ] Test search and saved locations
+- [x] Test location permission flow
+- [x] Test weather data fetching and display
+- [x] Test all unit conversions
+- [x] Test theme toggle (invert colors)
+- [x] Test tab navigation
+- [x] Test settings persistence
+- [x] Test search and saved locations
 
 **Race condition fixes:**
-- [ ] Add in-flight guard to CurrentLocationContext.fetchLocationAndWeather
-- [ ] Add cancellation flag to search-results.tsx useEffect
-- [ ] Add mutex to savedLocations.ts read-modify-write operations
+- [x] Add in-flight guard to CurrentLocationContext.fetchLocationAndWeather
+- [x] Add cancellation flag to search-results.tsx useEffect
+- [ ] Add mutex to savedLocations.ts read-modify-write operations (deferred)
 
 **Performance optimizations:**
-- [ ] Add cache TTL check (15 min) before refetching
-- [ ] Pre-compute sunrise/sunset events with useMemo
-- [ ] Verify memoization on list items
+- [x] Add cache TTL check (15 min) before refetching
+- [ ] Pre-compute sunrise/sunset events with useMemo (deferred)
+- [ ] Verify memoization on list items (deferred)
 
 **Final checks:**
 - [ ] Build production APK: `eas build -p android --profile production --local`
