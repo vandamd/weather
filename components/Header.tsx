@@ -69,11 +69,11 @@ export function Header({
         return <View style={styles.button} />;
     };
 
-    const renderRightButton = () => {
-        if (rightIcon && showRightIcon) {
-            return (
-                <HapticPressable onPress={onRightIconPress}>
-                    <View style={styles.button}>
+	const renderRightButton = () => {
+		if (rightIcon && showRightIcon) {
+			return (
+				<HapticPressable onPress={onRightIconPress}>
+					<View style={styles.button}>
                         <MaterialIcons
                             name={rightIcon}
                             size={n(28)}
@@ -82,32 +82,47 @@ export function Header({
                     </View>
                 </HapticPressable>
             );
-        }
-        return <View style={styles.button} />;
-    };
+		}
+		return <View style={styles.button} />;
+	};
 
-    return (
-        <View
-            style={[
-                styles.header,
+	const hasLeftButton = !hideBackButton || Boolean(leftIcon);
+	const hasRightButton = Boolean(rightIcon && showRightIcon);
+
+	return (
+		<View
+			style={[
+				styles.header,
                 { backgroundColor: invertColors ? "white" : "black" },
             ]}
-        >
-            {renderLeftButton()}
-            <View style={styles.titleContainer}>
-                {onTitlePress ? (
-                    <HapticPressable onPress={onTitlePress}>
-                        <StyledText style={styles.title} numberOfLines={1}>
-                            {headerTitle}
-                        </StyledText>
-                    </HapticPressable>
-                ) : (
-                    <StyledText style={styles.title} numberOfLines={1}>
-                        {headerTitle}
-                    </StyledText>
-                )}
-            </View>
-            {renderRightButton()}
+		>
+			{renderLeftButton()}
+			<View style={styles.titleContainer}>
+				{onTitlePress ? (
+					<HapticPressable onPress={onTitlePress}>
+						<StyledText
+							style={[
+								styles.title,
+								!hasLeftButton && !hasRightButton && styles.titleWide,
+							]}
+							numberOfLines={1}
+						>
+							{headerTitle}
+						</StyledText>
+					</HapticPressable>
+				) : (
+					<StyledText
+						style={[
+							styles.title,
+							!hasLeftButton && !hasRightButton && styles.titleWide,
+						]}
+						numberOfLines={1}
+					>
+						{headerTitle}
+					</StyledText>
+				)}
+			</View>
+			{renderRightButton()}
         </View>
     );
 }
@@ -121,12 +136,15 @@ const styles = StyleSheet.create({
         paddingVertical: n(5),
         zIndex: 1,
     },
-    title: {
-        fontSize: n(20),
-        fontFamily: "PublicSans-Regular",
-        paddingTop: n(2),
-        maxWidth: "75%",
-    },
+	title: {
+		fontSize: n(20),
+		fontFamily: "PublicSans-Regular",
+		paddingTop: n(2),
+		maxWidth: "75%",
+	},
+	titleWide: {
+		maxWidth: "100%",
+	},
     titleContainer: {
         flex: 1,
         alignItems: "center",
