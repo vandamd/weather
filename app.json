@@ -1,34 +1,39 @@
 {
-	"expo": {
-		"name": "Weather",
-		"slug": "weather",
-		"version": "1.1.2",
-		"orientation": "portrait",
-		"scheme": "weather",
-		"newArchEnabled": true,
-		"icon": "./assets/images/icon.png",
-		"android": {
-			"package": "com.vandam.weather",
-			"edgeToEdgeEnabled": true,
-			"permissions": [
-				"android.permission.ACCESS_COARSE_LOCATION",
-				"android.permission.ACCESS_FINE_LOCATION"
-			]
-		},
-		"ios": {
-			"infoPlist": {
-				"NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to use your location to show you weather information for your current area."
-			}
-		},
-		"plugins": ["expo-router"],
-		"experiments": {
-			"typedRoutes": true
-		},
-		"extra": {
-			"router": {},
-			"eas": {
-				"projectId": "ffe019a0-ca30-4041-a53f-cb71d0f5c1a4"
-			}
-		}
-	}
+  "expo": {
+    "name": "Weather",
+    "slug": "weather",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "weather",
+    "newArchEnabled": true,
+    "icon": "./assets/images/icon.png",
+    "android": {
+      "backgroundColor": "#000000",
+      "package": "com.vandam.weather",
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.INTERNET",
+        "android.permission.VIBRATE"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location to show local weather."
+        }
+      ],
+      "./plugins/withAndroidConfigChanges",
+      "./plugins/withAndroidTheme"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {}
+    }
+  }
 }

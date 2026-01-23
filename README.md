@@ -1,29 +1,30 @@
-<img src="assets/images/example.png" alt="Weather Screenshots">
+<img src="assets/images/example.png" alt="Example Template Screenshots">
 
-<p>An app for the Light Phone III to check the weather.</p>
+<p>A minimal Expo template to create a LightOS-inspired app.</p>
 
-![GitHub License](https://img.shields.io/github/license/vandamd/weather)
-![GitHub Release](https://img.shields.io/github/v/release/vandamd/weather)
+> [!NOTE]
+> This is very much a WIP. There's a lot of things I want to add but it'll take me a bit of time :)
 
-## Installation
-The lastest .apk file is available in [releases](https://github.com/vandamd/weather/releases/latest).
+## Quick Start
 
-I recommend using [Obtainium](https://github.com/ImranR98/Obtainium) and adding the repository's URL to receive updates.
+1. Update `app.json` with your app name, slug, and package name
+3. Run `bunx expo run:android`
 
-## Features
-- Current weather conditions
-- Hourly and weekly forecasts
-- Search and save multiple locations
-- Customisable units (temperature, precipitation, wind speed)
-- Current location support
-- Open-source and private (no tracking, no account required)
+## Commands
 
-## Acknowledgements
-Huge thank you to the following projects:
-- Weather API: [Open-meteo](https://open-meteo.com/)
-- Weather Icons: [erikflowers/weather-icons](https://github.com/erikflowers/weather-icons)
+```bash
+bunx expo run:android  # Build and run (dev)
+eas build -p android --profile production --local  # Build APK locally
+bun run sync-version   # Sync version across files
+bun run generate-icon  # Generate icon from app name
+```
 
-## Support
-Weather is developed and maintained in my free time.
+## GitHub Releases
 
-If you find it useful, please [consider sponsoring](https://github.com/sponsors/vandamd)! :)
+Trigger the workflow manually in Actions tab. It builds an APK and creates a GitHub release tagged with the version from `app.json`. Changelog is auto-generated from commits since the last release.
+
+Requires `EXPO_TOKEN` secret in repo settings.
+
+## Detailed Docs
+
+See [CLAUDE.md](./CLAUDE.md) for complete component reference, patterns, and examples.

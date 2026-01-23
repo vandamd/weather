@@ -5,120 +5,119 @@ import { router } from "expo-router";
 import { StyledText } from "./StyledText";
 import { HapticPressable } from "./HapticPressable";
 import { useInvertColors } from "@/contexts/InvertColorsContext";
-import { scaledFontSize, normalizedSize } from "@/utils/fontScaling";
+import { n } from "@/utils/scaling";
 
 interface HeaderProps {
-	iconName?: keyof typeof MaterialIcons.glyphMap;
-	onIconPress?: () => void;
-	iconShowLength?: number;
-	headerTitle?: string;
-	backEvent?: () => void;
-	hideBackButton?: boolean;
+    headerTitle?: string;
+    hideBackButton?: boolean;
+    onBackPress?: () => void;
+    leftIcon?: keyof typeof MaterialIcons.glyphMap;
+    onLeftIconPress?: () => void;
+    rightIcon?: keyof typeof MaterialIcons.glyphMap;
+    onRightIconPress?: () => void;
 }
 
 export function Header({
-	iconName,
-	onIconPress,
-	iconShowLength = 1,
-	headerTitle,
-	backEvent,
-	hideBackButton = false,
+    headerTitle,
+    hideBackButton = false,
+    onBackPress,
+    leftIcon,
+    onLeftIconPress,
+    rightIcon,
+    onRightIconPress,
 }: HeaderProps) {
-	const { invertColors } = useInvertColors();
-	const handleBack = backEvent
-		? backEvent
-		: () => {
-				if (router.canGoBack()) {
-					router.back();
-				}
-		  };
+    const { invertColors } = useInvertColors();
+    const iconColor = invertColors ? "black" : "white";
 
-	return (
-		<View
-			style={[
-				styles.header,
-				{ backgroundColor: invertColors ? "white" : "black" },
-			]}
-		>
-			{!hideBackButton ? (
-				<HapticPressable onPress={handleBack}>
-					<View
-						style={{
-							width: normalizedSize(32),
-							height: normalizedSize(32),
-							alignItems: "center",
-							paddingTop: normalizedSize(6),
-							paddingRight: normalizedSize(4),
-						}}
-					>
-						<MaterialIcons
-							name="arrow-back-ios"
-							size={normalizedSize(28)}
-							color={invertColors ? "black" : "white"}
-						/>
-					</View>
-				</HapticPressable>
-			) : (
-				<View
-					style={{
-						width: normalizedSize(32),
-						height: normalizedSize(32),
-						alignItems: "center",
-						paddingTop: normalizedSize(6),
-						paddingRight: normalizedSize(4),
-					}}
-				></View>
-			)}
+    const handleBack = onBackPress ?? (() => {
+        if (router.canGoBack()) {
+            router.back();
+        }
+    });
 
-			<StyledText style={[styles.title]} numberOfLines={1}>
-				{headerTitle}
-			</StyledText>
-			{iconShowLength > 0 && iconName ? (
-				<HapticPressable onPress={onIconPress}>
-					<View
-						style={{
-							width: normalizedSize(32),
-							height: normalizedSize(32),
-							alignItems: "center",
-							paddingTop: normalizedSize(6),
-							paddingLeft: normalizedSize(4),
-						}}
-					>
-						<MaterialIcons
-							name={iconName}
-							size={normalizedSize(28)}
-							color={invertColors ? "black" : "white"}
-						/>
-					</View>
-				</HapticPressable>
-			) : (
-				<View
-					style={{
-						width: normalizedSize(32),
-						height: normalizedSize(32),
-						alignItems: "center",
-						paddingTop: normalizedSize(6),
-						paddingLeft: normalizedSize(4),
-					}}
-				></View>
-			)}
-		</View>
-	);
+    const renderLeftButton = () => {
+        if (!hideBackButton) {
+            return (
+                <HapticPressable onPress={handleBack}>
+                    <View style={styles.button}>
+                        <MaterialIcons
+                            name="arrow-back-ios"
+                            size={n(28)}
+                            color={iconColor}
+                        />
+                    </View>
+                </HapticPressable>
+            );
+        }
+        if (leftIcon) {
+            return (
+                <HapticPressable onPress={onLeftIconPress}>
+                    <View style={styles.button}>
+                        <MaterialIcons
+                            name={leftIcon}
+                            size={n(28)}
+                            color={iconColor}
+                        />
+                    </View>
+                </HapticPressable>
+            );
+        }
+        return <View style={styles.button} />;
+    };
+
+    const renderRightButton = () => {
+        if (rightIcon) {
+            return (
+                <HapticPressable onPress={onRightIconPress}>
+                    <View style={styles.button}>
+                        <MaterialIcons
+                            name={rightIcon}
+                            size={n(28)}
+                            color={iconColor}
+                        />
+                    </View>
+                </HapticPressable>
+            );
+        }
+        return <View style={styles.button} />;
+    };
+
+    return (
+        <View
+            style={[
+                styles.header,
+                { backgroundColor: invertColors ? "white" : "black" },
+            ]}
+        >
+            {renderLeftButton()}
+            <StyledText style={styles.title} numberOfLines={1}>
+                {headerTitle}
+            </StyledText>
+            {renderRightButton()}
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
-	header: {
-		flexDirection: "row",
-		alignItems: "center",
-		justifyContent: "space-between",
-		paddingHorizontal: normalizedSize(22),
-		paddingVertical: normalizedSize(5),
-		zIndex: 1,
-	},
-	title: {
-		fontSize: scaledFontSize(20),
-		fontFamily: "PublicSans-Regular",
-		paddingTop: normalizedSize(2),
-		maxWidth: "75%",
-	},
+    header: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        paddingHorizontal: n(22),
+        paddingVertical: n(5),
+        zIndex: 1,
+    },
+    title: {
+        fontSize: n(20),
+        fontFamily: "PublicSans-Regular",
+        paddingTop: n(2),
+        maxWidth: "75%",
+    },
+    button: {
+        width: n(32),
+        height: n(32),
+        alignItems: "center",
+        paddingTop: n(6),
+        paddingRight: n(4),
+    },
 });

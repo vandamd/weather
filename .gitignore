@@ -7,7 +7,7 @@ node_modules/
 .expo/
 dist/
 web-build/
-expo-env.d.ts
+# expo-env.d.ts
 
 # Native
 .kotlin/
@@ -63,5 +63,3 @@ yarn-error.*
 
 app-example
 .cursor
-docs/
-scripts/
