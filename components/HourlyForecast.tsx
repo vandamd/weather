@@ -135,7 +135,7 @@ const HourlyItem = React.memo(function HourlyItem({
 				height={n(32)}
 				fill={invertColors ? "black" : "white"}
 			/>
-			<StyledText style={{ fontSize: n(19), paddingLeft: n(8) }}>
+			<StyledText style={styles.hourlyText}>
 				{time.toLocaleTimeString([], {
 					hour: "2-digit",
 					minute: "2-digit",
@@ -150,14 +150,8 @@ const HourlyItem = React.memo(function HourlyItem({
 				{typeof windAngle === "number" && (
 					<View
 						style={[
-							{
-								marginLeft: n(5),
-								flexDirection: "row",
-								alignItems: "center",
-							},
-							{
-								transform: [{ rotate: `${windAngle}deg` }],
-							},
+							styles.windContainer,
+							{ transform: [{ rotate: `${windAngle}deg` }] },
 						]}
 					>
 						<IconDirectionUp
@@ -193,7 +187,7 @@ const SunEventItem = React.memo(function SunEventItem({
 				height={n(32)}
 				fill={invertColors ? "black" : "white"}
 			/>
-			<StyledText style={{ fontSize: n(19), paddingLeft: n(8) }}>
+			<StyledText style={styles.hourlyText}>
 				{time.toLocaleTimeString([], {
 					hour: "2-digit",
 					minute: "2-digit",
@@ -215,8 +209,8 @@ const HourlyForecast = React.memo(function HourlyForecast({
 	const { invertColors } = useInvertColors();
 	const units = useUnits();
 	return (
-		<View style={{ paddingTop: n(16) }}>
-			<StyledText style={{ fontSize: n(19), paddingBottom: n(4) }}>
+		<View style={styles.container}>
+			<StyledText style={styles.sectionTitle}>
 				Hourly Forecast
 			</StyledText>
 			{hourlyData?.time.map((_, index) => {
@@ -283,5 +277,21 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "flex-start",
 		paddingVertical: 0,
+	},
+	hourlyText: {
+		fontSize: n(19),
+		paddingLeft: n(8),
+	},
+	windContainer: {
+		marginLeft: n(5),
+		flexDirection: "row",
+		alignItems: "center",
+	},
+	container: {
+		paddingTop: n(16),
+	},
+	sectionTitle: {
+		fontSize: n(19),
+		paddingBottom: n(4),
 	},
 });

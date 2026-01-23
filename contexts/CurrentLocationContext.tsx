@@ -15,6 +15,7 @@ import { useUnits } from "./UnitsContext";
 import {
 	getCachedWeather,
 	setCachedWeather,
+	isCacheValid,
 } from "@/utils/weatherCache";
 
 interface CurrentLocationContextType {
@@ -143,12 +144,15 @@ export const CurrentLocationProvider = ({
 	useEffect(() => {
 		const subscription = AppState.addEventListener(
 			"change",
-			(nextAppState: AppStateStatus) => {
+			async (nextAppState: AppStateStatus) => {
 				if (
 					appState.current.match(/inactive|background/) &&
 					nextAppState === "active"
 				) {
-					fetchLocationAndWeather();
+					const cacheValid = await isCacheValid();
+					if (!cacheValid) {
+						fetchLocationAndWeather();
+					}
 				}
 
 				appState.current = nextAppState;

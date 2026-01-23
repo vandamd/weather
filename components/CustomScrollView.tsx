@@ -11,11 +11,7 @@ import {
 import { useInvertColors } from "@/contexts/InvertColorsContext";
 import { n } from "@/utils/scaling";
 
-interface CustomScrollViewProps extends ScrollViewProps {
-	// We can add any custom props here if needed in the future
-}
-
-const CustomScrollView: React.FC<PropsWithChildren<CustomScrollViewProps>> = ({
+const CustomScrollView: React.FC<PropsWithChildren<ScrollViewProps>> = ({
 	children,
 	style,
 	contentContainerStyle,

@@ -8,6 +8,7 @@ import { useInvertColors } from "@/contexts/InvertColorsContext";
 import CustomScrollView from "@/components/CustomScrollView";
 import iso311a2 from "iso-3166-1-alpha-2";
 import { n } from "@/utils/scaling";
+import { formatLocationName } from "@/utils/formatting";
 
 export default function SearchResultsScreen() {
 	const { query } = useLocalSearchParams<{ query?: string }>();
@@ -111,12 +112,10 @@ export default function SearchResultsScreen() {
 					results.map((location) => (
 						<View key={location.id} style={{ marginBottom: n(16) }}>
 							<StyledButton
-								text={`${location.name}${
-									location.admin1 &&
-									location.admin1 !== location.name
-										? `, ${location.admin1}`
-										: ""
-								}, ${iso311a2.getCountry(location.country_code)}`}
+								text={formatLocationName({
+									...location,
+									country: iso311a2.getCountry(location.country_code) ?? location.country_code,
+								})}
 								onPress={() => handlePressLocation(location)}
 								fontSize={28}
 							/>

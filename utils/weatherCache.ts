@@ -111,14 +111,3 @@ export async function getCacheAge(): Promise<number | null> {
 		return null;
 	}
 }
-
-/**
- * Clear cached weather data
- */
-export async function clearCachedWeather(): Promise<void> {
-	try {
-		await AsyncStorage.removeItem(CACHE_KEY);
-	} catch (error) {
-		console.error("Error clearing cached weather:", error);
-	}
-}

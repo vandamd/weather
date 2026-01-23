@@ -68,10 +68,13 @@ export default function CurrentLocationScreen() {
 
 	useFocusEffect(
 		useCallback(() => {
-			if (dataLoaded) {
-				refetchWeather();
+			if (dataLoaded && lastUpdated) {
+				const timeSinceLastUpdate = Date.now() - lastUpdated;
+				if (timeSinceLastUpdate > 60000) { // 1 minute minimum
+					refetchWeather();
+				}
 			}
-		}, [dataLoaded, refetchWeather])
+		}, [dataLoaded, lastUpdated, refetchWeather])
 	);
 
 	// Show blank screen with correct background color while loading

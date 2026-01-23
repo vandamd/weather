@@ -9,11 +9,10 @@ interface SelectorButtonProps {
     label: string;
     value: string;
     valueChangePage?: string;
-    href?: string;
 }
 
-export function SelectorButton({ label, value, valueChangePage, href }: SelectorButtonProps) {
-    const targetPath = valueChangePage || href;
+export function SelectorButton({ label, value, valueChangePage }: SelectorButtonProps) {
+    const targetPath = valueChangePage;
     return (
         <HapticPressable
             style={styles.button}

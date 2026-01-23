@@ -74,7 +74,4 @@ const styles = StyleSheet.create({
 	apparentTemperature: {
 		fontSize: n(20),
 	},
-	rangeTemperature: {
-		fontSize: n(20),
-	},
 });

@@ -139,7 +139,7 @@ const WeeklyItem = React.memo(function WeeklyItem({
 				height={n(32)}
 				fill={invertColors ? "black" : "white"}
 			/>
-			<StyledText style={{ fontSize: n(20), paddingLeft: n(8) }}>
+			<StyledText style={styles.weeklyText}>
 				{date.toLocaleDateString("en-US", {
 					weekday: "long",
 					timeZone: "UTC",
@@ -149,13 +149,8 @@ const WeeklyItem = React.memo(function WeeklyItem({
 				{typeof windAngle === "number" && (
 					<View
 						style={[
-							{
-								flexDirection: "row",
-								alignItems: "center",
-							},
-							{
-								transform: [{ rotate: `${windAngle}deg` }],
-							},
+							styles.windContainer,
+							{ transform: [{ rotate: `${windAngle}deg` }] },
 						]}
 					>
 						<IconDirectionUp
@@ -177,8 +172,8 @@ const WeeklyForecast = React.memo(function WeeklyForecast({
 	const { invertColors } = useInvertColors();
 	const units = useUnits();
 	return (
-		<View style={{ paddingTop: n(16) }}>
-			<StyledText style={{ fontSize: n(20), paddingBottom: n(4) }}>
+		<View style={styles.container}>
+			<StyledText style={styles.sectionTitle}>
 				Weekly Forecast
 			</StyledText>
 			{weeklyData?.time.map((_, index) => {
@@ -216,5 +211,20 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "flex-start",
 		paddingVertical: 0,
+	},
+	weeklyText: {
+		fontSize: n(20),
+		paddingLeft: n(8),
+	},
+	windContainer: {
+		flexDirection: "row",
+		alignItems: "center",
+	},
+	container: {
+		paddingTop: n(16),
+	},
+	sectionTitle: {
+		fontSize: n(20),
+		paddingBottom: n(4),
 	},
 });

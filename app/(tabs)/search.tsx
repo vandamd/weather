@@ -8,6 +8,7 @@ import CustomScrollView from "@/components/CustomScrollView";
 import { useInvertColors } from "@/contexts/InvertColorsContext";
 import { SavedLocation, getSavedLocations } from "@/utils/savedLocations";
 import { n } from "@/utils/scaling";
+import { formatLocationName } from "@/utils/formatting";
 
 export default function SearchScreen() {
 	const [query, setQuery] = useState("");
@@ -80,12 +81,7 @@ export default function SearchScreen() {
 								style={{ marginBottom: n(15) }}
 							>
 								<StyledButton
-									text={`${location.name}${
-										location.admin1 &&
-										location.admin1 !== location.name
-											? `, ${location.admin1}`
-											: ""
-									}, ${location.country}`}
+									text={formatLocationName(location)}
 									onPress={() =>
 										handlePressSavedLocation(location)
 									}
