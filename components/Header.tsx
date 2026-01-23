@@ -15,6 +15,8 @@ interface HeaderProps {
     onLeftIconPress?: () => void;
     rightIcon?: keyof typeof MaterialIcons.glyphMap;
     onRightIconPress?: () => void;
+    showRightIcon?: boolean;
+    onTitlePress?: () => void;
 }
 
 export function Header({
@@ -25,6 +27,8 @@ export function Header({
     onLeftIconPress,
     rightIcon,
     onRightIconPress,
+    showRightIcon = true,
+    onTitlePress,
 }: HeaderProps) {
     const { invertColors } = useInvertColors();
     const iconColor = invertColors ? "black" : "white";
@@ -66,7 +70,7 @@ export function Header({
     };
 
     const renderRightButton = () => {
-        if (rightIcon) {
+        if (rightIcon && showRightIcon) {
             return (
                 <HapticPressable onPress={onRightIconPress}>
                     <View style={styles.button}>
@@ -90,9 +94,19 @@ export function Header({
             ]}
         >
             {renderLeftButton()}
-            <StyledText style={styles.title} numberOfLines={1}>
-                {headerTitle}
-            </StyledText>
+            <View style={styles.titleContainer}>
+                {onTitlePress ? (
+                    <HapticPressable onPress={onTitlePress}>
+                        <StyledText style={styles.title} numberOfLines={1}>
+                            {headerTitle}
+                        </StyledText>
+                    </HapticPressable>
+                ) : (
+                    <StyledText style={styles.title} numberOfLines={1}>
+                        {headerTitle}
+                    </StyledText>
+                )}
+            </View>
             {renderRightButton()}
         </View>
     );
@@ -112,6 +126,11 @@ const styles = StyleSheet.create({
         fontFamily: "PublicSans-Regular",
         paddingTop: n(2),
         maxWidth: "75%",
+    },
+    titleContainer: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
     },
     button: {
         width: n(32),

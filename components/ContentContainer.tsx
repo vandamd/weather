@@ -9,9 +9,13 @@ interface ContentContainerProps {
     headerTitle?: string;
     children?: ReactNode;
     hideBackButton?: boolean;
+    leftIcon?: keyof typeof MaterialIcons.glyphMap;
+    onLeftIconPress?: () => void;
     rightIcon?: keyof typeof MaterialIcons.glyphMap;
     showRightIcon?: boolean;
     onRightIconPress?: () => void;
+    onBackPress?: () => void;
+    onTitlePress?: () => void;
     style?: StyleProp<ViewStyle>;
 }
 
@@ -19,9 +23,13 @@ export default function ContentContainer({
     headerTitle,
     children,
     hideBackButton = false,
+    leftIcon,
+    onLeftIconPress,
     rightIcon,
     showRightIcon = true,
     onRightIconPress,
+    onBackPress,
+    onTitlePress,
     style,
 }: ContentContainerProps) {
     const { invertColors } = useInvertColors();
@@ -36,8 +44,13 @@ export default function ContentContainer({
                 <Header
                     headerTitle={headerTitle}
                     hideBackButton={hideBackButton}
-                    rightIcon={showRightIcon ? rightIcon : undefined}
+                    leftIcon={leftIcon}
+                    onLeftIconPress={onLeftIconPress}
+                    rightIcon={rightIcon}
+                    showRightIcon={showRightIcon}
                     onRightIconPress={onRightIconPress}
+                    onBackPress={onBackPress}
+                    onTitlePress={onTitlePress}
                 />
             )}
             <View style={[styles.content, style]}>{children ?? null}</View>

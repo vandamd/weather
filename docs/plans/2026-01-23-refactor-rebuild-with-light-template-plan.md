@@ -204,25 +204,25 @@ assets/
 ### Phase 2: Port Code (Copy, Don't Rewrite)
 
 **UI Components from passes:**
-- [ ] Copy ContentContainer.tsx, Header.tsx, Navbar.tsx
-- [ ] Copy StyledText.tsx, StyledButton.tsx, HapticPressable.tsx
-- [ ] Copy ToggleSwitch.tsx, CustomScrollView.tsx
-- [ ] Update imports to use `@/*` alias
+- [x] Copy ContentContainer.tsx, Header.tsx, Navbar.tsx
+- [x] Copy StyledText.tsx, StyledButton.tsx, HapticPressable.tsx
+- [x] Copy ToggleSwitch.tsx, CustomScrollView.tsx
+- [x] Update imports to use `@/*` alias
 
 **Weather utilities from current app:**
-- [ ] Copy utils/weather.ts, geocoding.ts, savedLocations.ts
-- [ ] Copy utils/weatherCache.ts, weatherIconMap.ts, weatherDescriptionMap.ts
-- [ ] Copy all SVG icons to assets/weather/
+- [x] Copy utils/weather.ts, geocoding.ts, savedLocations.ts
+- [x] Copy utils/weatherCache.ts, weatherIconMap.ts, weatherDescriptionMap.ts
+- [x] Copy all SVG icons to assets/weather/
 
 **Contexts:**
-- [ ] Copy InvertColorsContext from light-template
-- [ ] Copy CurrentLocationContext, UnitsContext from weather
-- [ ] Update imports and scaling function references
+- [x] Copy InvertColorsContext from light-template
+- [x] Copy CurrentLocationContext, UnitsContext from weather
+- [x] Update imports and scaling function references
 
 **Weather components:**
-- [ ] Copy CurrentSummary.tsx, HourlyForecast.tsx, WeeklyForecast.tsx
-- [ ] Copy WeatherVariableSelector.tsx
-- [ ] Replace `scaledFontSize()`/`normalizedSize()` with `n()`
+- [x] Copy CurrentSummary.tsx, HourlyForecast.tsx, WeeklyForecast.tsx
+- [x] Copy WeatherVariableSelector.tsx
+- [x] Replace `scaledFontSize()`/`normalizedSize()` with `n()`
 
 **Research Insights:**
 
