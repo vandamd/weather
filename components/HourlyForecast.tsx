@@ -5,6 +5,7 @@ import { StyledText } from "@/components/StyledText";
 import { getWeatherIcon } from "@/utils/weatherIconMap";
 import { getWeatherDescription } from "@/utils/weatherDescriptionMap";
 import { WeatherData } from "@/utils/weather";
+import { AirQualityData } from "@/utils/airQuality";
 import IconDirectionUp from "@/assets/weather/wi-direction-up.svg";
 import IconSunrise from "@/assets/weather/wi-sunrise.svg";
 import IconSunset from "@/assets/weather/wi-sunset.svg";
@@ -16,6 +17,7 @@ interface HourlyForecastProps {
 	hourlyData?: WeatherData["hourly"];
 	dailyData?: WeatherData["daily"];
 	selectedDetails: string[];
+	airQualityData?: AirQualityData | null;
 }
 
 interface HourlyVariableData {
@@ -29,7 +31,8 @@ const getVariableDataAndUnit = (
 	hourlyData: WeatherData["hourly"],
 	variableName: string,
 	index: number,
-	units: ReturnType<typeof useUnits>
+	units: ReturnType<typeof useUnits>,
+	airQualityData?: AirQualityData | null
 ): HourlyVariableData => {
 	const { windSpeedUnit, precipitationUnit } = units;
 
@@ -106,6 +109,38 @@ const getVariableDataAndUnit = (
 				label: "P:",
 				value: formatNumber(hourlyData.surfacePressure[index], 0),
 				unit: "hPa",
+			};
+		case "AQI (US)":
+			return {
+				label: "AQI:",
+				value: airQualityData?.hourly.usAqi[index] != null
+					? formatNumber(airQualityData.hourly.usAqi[index], 0)
+					: "-",
+				unit: "",
+			};
+		case "AQI (EU)":
+			return {
+				label: "AQI:",
+				value: airQualityData?.hourly.europeanAqi[index] != null
+					? formatNumber(airQualityData.hourly.europeanAqi[index], 0)
+					: "-",
+				unit: "",
+			};
+		case "PM2.5":
+			return {
+				label: "PM:",
+				value: airQualityData?.hourly.pm25[index] != null
+					? formatNumber(airQualityData.hourly.pm25[index], 0)
+					: "-",
+				unit: "μg/m³",
+			};
+		case "PM10":
+			return {
+				label: "PM:",
+				value: airQualityData?.hourly.pm10[index] != null
+					? formatNumber(airQualityData.hourly.pm10[index], 0)
+					: "-",
+				unit: "μg/m³",
 			};
 		default:
 			return {
@@ -239,6 +274,7 @@ const HourlyForecast = React.memo(function HourlyForecast({
 	hourlyData,
 	dailyData,
 	selectedDetails,
+	airQualityData,
 }: HourlyForecastProps) {
 	const { invertColors } = useInvertColors();
 	const units = useUnits();
@@ -283,7 +319,8 @@ const HourlyForecast = React.memo(function HourlyForecast({
 							hourlyData,
 							detail,
 							index,
-							units
+							units,
+							airQualityData
 						);
 						const isLast = detailIdx === selectedDetails.length - 1;
 						const hasWindArrow =

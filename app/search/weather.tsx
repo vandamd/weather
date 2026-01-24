@@ -3,6 +3,7 @@ import ContentContainer from "@/components/ContentContainer";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { getWeatherData, WeatherData } from "@/utils/weather";
+import { getAirQualityData, AirQualityData } from "@/utils/airQuality";
 import { Text, StyleSheet, View, AppState, AppStateStatus } from "react-native";
 import CurrentSummary from "@/components/CurrentSummary";
 import HourlyForecast from "@/components/HourlyForecast";
@@ -36,6 +37,7 @@ export default function LocationWeatherScreen() {
 
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
     const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+    const [airQualityData, setAirQualityData] = useState<AirQualityData | null>(null);
     const [locationName, setLocationName] = useState<string>("");
     const [isSaved, setIsSaved] = useState<boolean>(false);
     const [currentLocationId, setCurrentLocationId] = useState<number | null>(
@@ -56,15 +58,19 @@ export default function LocationWeatherScreen() {
         if (lat && lon) {
             setErrorMsg(null);
             try {
-                const data = await getWeatherData(
-                    lat,
-                    lon,
-                    units.temperatureUnit,
-                    units.windSpeedUnit,
-                    units.precipitationUnit
-                );
-                setWeatherData(data);
-                if (!data) {
+                const [weatherResult, airQualityResult] = await Promise.all([
+                    getWeatherData(
+                        lat,
+                        lon,
+                        units.temperatureUnit,
+                        units.windSpeedUnit,
+                        units.precipitationUnit
+                    ),
+                    getAirQualityData(lat, lon),
+                ]);
+                setWeatherData(weatherResult);
+                setAirQualityData(airQualityResult);
+                if (!weatherResult) {
                     setErrorMsg(
                         "Could not fetch weather data for this location."
                     );
@@ -210,10 +216,12 @@ export default function LocationWeatherScreen() {
                             hourlyData={weatherData.hourly}
                             dailyData={weatherData.daily}
                             selectedDetails={selectedDetails}
+                            airQualityData={airQualityData}
                         />
                         <WeeklyForecast
                             weeklyData={weatherData.daily}
                             selectedDetails={selectedDetails}
+                            airQualityData={airQualityData}
                         />
                     </View>
                 ) : (

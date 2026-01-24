@@ -21,6 +21,10 @@ export const WEATHER_DETAILS = [
 	"Cloud Cover",
 	"Visibility",
 	"Pressure",
+	"AQI (US)",
+	"AQI (EU)",
+	"PM2.5",
+	"PM10",
 ] as const;
 
 export const MAX_DETAILS = 3;
@@ -40,6 +44,10 @@ export const DETAIL_SHORTHANDS: Record<WeatherDetail, string> = {
 	"Cloud Cover": "C",
 	"Visibility": "V",
 	"Pressure": "PR",
+	"AQI (US)": "AQI",
+	"AQI (EU)": "AQI",
+	"PM2.5": "PM",
+	"PM10": "PM",
 };
 
 interface DetailsContextType {

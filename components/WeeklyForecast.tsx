@@ -5,6 +5,7 @@ import { StyledText } from "@/components/StyledText";
 import { getWeatherIcon } from "@/utils/weatherIconMap";
 import { getWeatherDescription } from "@/utils/weatherDescriptionMap";
 import { WeatherData } from "@/utils/weather";
+import { AirQualityData } from "@/utils/airQuality";
 import IconDirectionUp from "@/assets/weather/wi-direction-up.svg";
 import { useUnits } from "@/contexts/UnitsContext";
 import { n } from "@/utils/scaling";
@@ -13,6 +14,7 @@ import { formatNumber } from "@/utils/numberFormatting";
 interface WeeklyForecastProps {
     weeklyData?: WeatherData["daily"];
     selectedDetails: string[];
+    airQualityData?: AirQualityData | null;
 }
 
 interface DailyVariableData {
@@ -22,11 +24,27 @@ interface DailyVariableData {
     windAngle?: number;
 }
 
+/**
+ * Get daily max from hourly air quality data
+ * Each day has 24 hourly values (index 0-23 for day 0, 24-47 for day 1, etc.)
+ */
+const getDailyMaxFromHourly = (
+    hourlyData: number[],
+    dayIndex: number
+): number | null => {
+    const startHour = dayIndex * 24;
+    const endHour = startHour + 24;
+    const dayValues = hourlyData.slice(startHour, endHour).filter((v) => v != null);
+    if (dayValues.length === 0) return null;
+    return Math.max(...dayValues);
+};
+
 const getDailyVariableData = (
     dailyData: WeatherData["daily"],
     variableName: string,
     index: number,
-    units: ReturnType<typeof useUnits>
+    units: ReturnType<typeof useUnits>,
+    airQualityData?: AirQualityData | null
 ): DailyVariableData => {
     const { windSpeedUnit, precipitationUnit } = units;
 
@@ -104,6 +122,46 @@ const getDailyVariableData = (
                 value: formatNumber(dailyData.surfacePressureMean[index], 0),
                 unit: "hPa",
             };
+        case "AQI (US)": {
+            const maxVal = airQualityData
+                ? getDailyMaxFromHourly(airQualityData.hourly.usAqi, index)
+                : null;
+            return {
+                label: "AQI:",
+                value: maxVal != null ? formatNumber(maxVal, 0) : "-",
+                unit: "",
+            };
+        }
+        case "AQI (EU)": {
+            const maxVal = airQualityData
+                ? getDailyMaxFromHourly(airQualityData.hourly.europeanAqi, index)
+                : null;
+            return {
+                label: "AQI:",
+                value: maxVal != null ? formatNumber(maxVal, 0) : "-",
+                unit: "",
+            };
+        }
+        case "PM2.5": {
+            const maxVal = airQualityData
+                ? getDailyMaxFromHourly(airQualityData.hourly.pm25, index)
+                : null;
+            return {
+                label: "PM:",
+                value: maxVal != null ? formatNumber(maxVal, 0) : "-",
+                unit: "μg/m³",
+            };
+        }
+        case "PM10": {
+            const maxVal = airQualityData
+                ? getDailyMaxFromHourly(airQualityData.hourly.pm10, index)
+                : null;
+            return {
+                label: "PM:",
+                value: maxVal != null ? formatNumber(maxVal, 0) : "-",
+                unit: "μg/m³",
+            };
+        }
         default:
             return {
                 label: "T:",
@@ -193,6 +251,7 @@ const WeeklyItem = React.memo(function WeeklyItem({
 const WeeklyForecast = React.memo(function WeeklyForecast({
     weeklyData,
     selectedDetails,
+    airQualityData,
 }: WeeklyForecastProps) {
     const { invertColors } = useInvertColors();
     const units = useUnits();
@@ -209,7 +268,8 @@ const WeeklyForecast = React.memo(function WeeklyForecast({
                             weeklyData,
                             detail,
                             index,
-                            units
+                            units,
+                            airQualityData
                         );
                         const isLast = detailIdx === selectedDetails.length - 1;
                         const hasWindArrow =

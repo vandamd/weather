@@ -15,6 +15,7 @@ export default function CurrentLocationScreen() {
 	const {
 		currentLocation,
 		weatherData,
+		airQualityData,
 		errorMsg,
 		dataLoaded,
 		lastUpdated,
@@ -69,10 +70,12 @@ export default function CurrentLocationScreen() {
 						hourlyData={weatherData.hourly}
 						dailyData={weatherData.daily}
 						selectedDetails={selectedDetails}
+						airQualityData={airQualityData}
 					/>
 					<WeeklyForecast
 						weeklyData={weatherData.daily}
 						selectedDetails={selectedDetails}
+						airQualityData={airQualityData}
 					/>
 				</CustomScrollView>
 			)}

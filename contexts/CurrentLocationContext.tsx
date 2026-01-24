@@ -11,16 +11,22 @@ import React, {
 import { AppState, AppStateStatus } from "react-native";
 import * as Location from "expo-location";
 import { getWeatherData, WeatherData } from "@/utils/weather";
+import { getAirQualityData, AirQualityData } from "@/utils/airQuality";
 import { useUnits } from "./UnitsContext";
 import {
 	getCachedWeather,
 	setCachedWeather,
 	isCacheValid,
 } from "@/utils/weatherCache";
+import {
+	getCachedAirQuality,
+	setCachedAirQuality,
+} from "@/utils/airQualityCache";
 
 interface CurrentLocationContextType {
 	currentLocation: string;
 	weatherData: WeatherData | null;
+	airQualityData: AirQualityData | null;
 	errorMsg: string | null;
 	dataLoaded: boolean;
 	lastUpdated: number | null;
@@ -30,6 +36,7 @@ interface CurrentLocationContextType {
 const CurrentLocationContext = createContext<CurrentLocationContextType>({
 	currentLocation: "",
 	weatherData: null,
+	airQualityData: null,
 	errorMsg: null,
 	dataLoaded: false,
 	lastUpdated: null,
@@ -46,6 +53,7 @@ export const CurrentLocationProvider = ({
 	const units = useUnits();
 	const [currentLocation, setCurrentLocation] = useState<string>("");
 	const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+	const [airQualityData, setAirQualityData] = useState<AirQualityData | null>(null);
 	const [errorMsg, setErrorMsg] = useState<string | null>(null);
 	const [dataLoaded, setDataLoaded] = useState(false);
 	const [lastUpdated, setLastUpdated] = useState<number | null>(null);
@@ -55,12 +63,18 @@ export const CurrentLocationProvider = ({
 	// Load cached data immediately on mount
 	useEffect(() => {
 		const loadCache = async () => {
-			const cached = await getCachedWeather();
-			if (cached) {
-				setWeatherData(cached.data);
-				setLastUpdated(cached.timestamp);
+			const [cachedWeather, cachedAirQuality] = await Promise.all([
+				getCachedWeather(),
+				getCachedAirQuality(),
+			]);
+			if (cachedWeather) {
+				setWeatherData(cachedWeather.data);
+				setLastUpdated(cachedWeather.timestamp);
 				setCurrentLocation("Current Location");
 				setDataLoaded(true);
+			}
+			if (cachedAirQuality) {
+				setAirQualityData(cachedAirQuality.data);
 			}
 		};
 
@@ -94,24 +108,47 @@ export const CurrentLocationProvider = ({
 			// Set a generic location name
 			setCurrentLocation("Current Location");
 
-			const data = await getWeatherData(
-				location.coords.latitude,
-				location.coords.longitude,
-				units.temperatureUnit,
-				units.windSpeedUnit,
-				units.precipitationUnit
-			);
-			setWeatherData(data);
+			const [weatherResult, airQualityResult] = await Promise.all([
+				getWeatherData(
+					location.coords.latitude,
+					location.coords.longitude,
+					units.temperatureUnit,
+					units.windSpeedUnit,
+					units.precipitationUnit
+				),
+				getAirQualityData(
+					location.coords.latitude,
+					location.coords.longitude
+				),
+			]);
+
+			setWeatherData(weatherResult);
+			setAirQualityData(airQualityResult);
 			setErrorMsg(null);
 
 			// Cache the fetched data
-			if (data) {
-				const timestamp = Date.now();
-				await setCachedWeather(
-					location.coords.latitude,
-					location.coords.longitude,
-					data
+			const timestamp = Date.now();
+			const cachePromises: Promise<void>[] = [];
+			if (weatherResult) {
+				cachePromises.push(
+					setCachedWeather(
+						location.coords.latitude,
+						location.coords.longitude,
+						weatherResult
+					)
 				);
+			}
+			if (airQualityResult) {
+				cachePromises.push(
+					setCachedAirQuality(
+						location.coords.latitude,
+						location.coords.longitude,
+						airQualityResult
+					)
+				);
+			}
+			await Promise.all(cachePromises);
+			if (weatherResult) {
 				setLastUpdated(timestamp);
 			}
 		} catch (error: unknown) {
@@ -168,12 +205,13 @@ export const CurrentLocationProvider = ({
 		() => ({
 			currentLocation,
 			weatherData,
+			airQualityData,
 			errorMsg,
 			dataLoaded,
 			lastUpdated,
 			refetchWeather: fetchLocationAndWeather,
 		}),
-		[currentLocation, weatherData, errorMsg, dataLoaded, lastUpdated, fetchLocationAndWeather]
+		[currentLocation, weatherData, airQualityData, errorMsg, dataLoaded, lastUpdated, fetchLocationAndWeather]
 	);
 
 	return (
