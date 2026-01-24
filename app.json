@@ -20,12 +20,6 @@
     "plugins": [
       "expo-router",
       "expo-font",
-      [
-        "expo-location",
-        {
-          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location to show local weather."
-        }
-      ],
       "./plugins/withAndroidConfigChanges",
       "./plugins/withAndroidTheme"
     ],

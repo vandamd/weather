@@ -8,8 +8,8 @@ import React, {
 	useRef,
 	useMemo,
 } from "react";
-import { AppState, AppStateStatus } from "react-native";
-import * as Location from "expo-location";
+import { AppState, AppStateStatus, PermissionsAndroid, Platform } from "react-native";
+import Geolocation from "react-native-geolocation-service";
 import { getWeatherData, WeatherData } from "@/utils/weather";
 import { getAirQualityData, AirQualityData } from "@/utils/airQuality";
 import { useUnits } from "./UnitsContext";
@@ -92,17 +92,32 @@ export const CurrentLocationProvider = ({
 		isFetchingRef.current = true;
 
 		try {
-			const { status } = await Location.requestForegroundPermissionsAsync();
-			if (status !== "granted") {
-				setErrorMsg("Permission to access location was denied");
-				console.log("Location permission denied.");
-				setDataLoaded(true);
-				isFetchingRef.current = false;
-				return;
+			if (Platform.OS === "android") {
+				const granted = await PermissionsAndroid.request(
+					PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+					{
+						title: "Location Permission",
+						message: "This app needs access to your location to show local weather.",
+						buttonNeutral: "Ask Me Later",
+						buttonNegative: "Cancel",
+						buttonPositive: "OK",
+					}
+				);
+				if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+					setErrorMsg("Permission to access location was denied");
+					console.log("Location permission denied.");
+					setDataLoaded(true);
+					isFetchingRef.current = false;
+					return;
+				}
 			}
 
-			const location = await Location.getCurrentPositionAsync({
-				accuracy: Location.Accuracy.High,
+			const location = await new Promise<{ coords: { latitude: number; longitude: number } }>((resolve, reject) => {
+				Geolocation.getCurrentPosition(
+					(position) => resolve(position),
+					(error) => reject(error),
+					{ enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+				);
 			});
 
 			setCurrentLocation("Current Location");

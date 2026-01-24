@@ -17,7 +17,7 @@
 		"expo-font": "~14.0.10",
 		"expo-haptics": "~15.0.8",
 		"expo-linking": "~8.0.11",
-		"expo-location": "~18.0.9",
+		"react-native-geolocation-service": "^5.3.1",
 		"expo-navigation-bar": "~5.0.10",
 		"expo-router": "~6.0.21",
 		"expo-splash-screen": "~31.0.13",
