@@ -1,6 +1,7 @@
 import React, { ReactNode } from "react";
 import { View, StyleSheet } from "react-native";
 import { useInvertColors } from "@/contexts/InvertColorsContext";
+import { useShowIcons } from "@/contexts/ShowIconsContext";
 import { StyledText } from "@/components/StyledText";
 import { getWeatherIcon } from "@/utils/weatherIconMap";
 import { n } from "@/utils/scaling";
@@ -24,15 +25,18 @@ export default function CurrentSummary({
 	isDay,
 }: CurrentSummaryProps) {
 	const { invertColors } = useInvertColors();
+	const { showIcons } = useShowIcons();
 	const WeatherIcon = getWeatherIcon(weatherCode, isDay);
 	return (
 		<View style={styles.container}>
 			<View style={styles.topHalf}>
-				<WeatherIcon
-					width={n(100)}
-					height={n(100)}
-					fill={invertColors ? "black" : "white"}
-				/>
+				{showIcons && (
+					<WeatherIcon
+						width={n(100)}
+						height={n(100)}
+						fill={invertColors ? "black" : "white"}
+					/>
+				)}
 				<StyledText style={styles.currentTemperature}>
 					{formatNumber(currentTemperature, 0)}°
 				</StyledText>

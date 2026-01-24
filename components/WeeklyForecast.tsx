@@ -1,6 +1,7 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { useInvertColors } from "@/contexts/InvertColorsContext";
+import { useShowIcons } from "@/contexts/ShowIconsContext";
 import { StyledText } from "@/components/StyledText";
 import { getWeatherIcon } from "@/utils/weatherIconMap";
 import { getWeatherDescription } from "@/utils/weatherDescriptionMap";
@@ -184,6 +185,7 @@ interface WeeklyItemProps {
     description: string;
     detailSegments: DetailSegment[];
     invertColors: boolean;
+    showIcons: boolean;
 }
 
 const WeeklyItem = React.memo(function WeeklyItem({
@@ -192,6 +194,7 @@ const WeeklyItem = React.memo(function WeeklyItem({
     description,
     detailSegments,
     invertColors,
+    showIcons,
 }: WeeklyItemProps) {
     const WeatherIconComponent = React.useMemo(
         () => getWeatherIcon(weatherCode, 1),
@@ -208,12 +211,14 @@ const WeeklyItem = React.memo(function WeeklyItem({
             </StyledText>
             <View style={styles.infoContainer}>
                 <View style={styles.firstLine}>
-                    <WeatherIconComponent
-                        width={n(32)}
-                        height={n(32)}
-                        fill={invertColors ? "black" : "white"}
-                    />
-                    <StyledText style={styles.firstLineText}>{description}</StyledText>
+                    {showIcons && (
+                        <WeatherIconComponent
+                            width={n(32)}
+                            height={n(32)}
+                            fill={invertColors ? "black" : "white"}
+                        />
+                    )}
+                    <StyledText style={[styles.firstLineText, showIcons && styles.firstLineTextWithIcon]}>{description}</StyledText>
                 </View>
                 <View style={styles.secondLine}>
                     {detailSegments.map((segment, idx) => (
@@ -254,6 +259,7 @@ const WeeklyForecast = React.memo(function WeeklyForecast({
     airQualityData,
 }: WeeklyForecastProps) {
     const { invertColors } = useInvertColors();
+    const { showIcons } = useShowIcons();
     const units = useUnits();
     return (
         <View style={styles.container}>
@@ -296,6 +302,7 @@ const WeeklyForecast = React.memo(function WeeklyForecast({
                         )}
                         detailSegments={detailSegments}
                         invertColors={invertColors}
+                        showIcons={showIcons}
                     />
                 );
             })}
@@ -325,6 +332,8 @@ const styles = StyleSheet.create({
     },
     firstLineText: {
         fontSize: n(26),
+    },
+    firstLineTextWithIcon: {
         paddingLeft: n(8),
     },
     secondLine: {

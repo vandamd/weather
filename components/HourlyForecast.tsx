@@ -1,6 +1,7 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { useInvertColors } from "@/contexts/InvertColorsContext";
+import { useShowIcons } from "@/contexts/ShowIconsContext";
 import { StyledText } from "@/components/StyledText";
 import { getWeatherIcon } from "@/utils/weatherIconMap";
 import { getWeatherDescription } from "@/utils/weatherDescriptionMap";
@@ -165,6 +166,7 @@ interface HourlyItemProps {
 	detailSegments: DetailSegment[];
 	description: string;
 	invertColors: boolean;
+	showIcons: boolean;
 }
 
 const HourlyItem = React.memo(function HourlyItem({
@@ -174,6 +176,7 @@ const HourlyItem = React.memo(function HourlyItem({
 	detailSegments,
 	description,
 	invertColors,
+	showIcons,
 }: HourlyItemProps) {
 	const WeatherIconComponent = React.useMemo(
 		() => getWeatherIcon(weatherCode, isDay),
@@ -192,12 +195,14 @@ const HourlyItem = React.memo(function HourlyItem({
 			</StyledText>
 			<View style={styles.infoContainer}>
 				<View style={styles.firstLine}>
-					<WeatherIconComponent
-						width={n(32)}
-						height={n(32)}
-						fill={invertColors ? "black" : "white"}
-					/>
-					<StyledText style={styles.firstLineText}>{description}</StyledText>
+					{showIcons && (
+						<WeatherIconComponent
+							width={n(32)}
+							height={n(32)}
+							fill={invertColors ? "black" : "white"}
+						/>
+					)}
+					<StyledText style={[styles.firstLineText, showIcons && styles.firstLineTextWithIcon]}>{description}</StyledText>
 				</View>
 				<View style={styles.secondLine}>
 					{detailSegments.map((segment, idx) => (
@@ -236,12 +241,14 @@ interface SunEventItemProps {
 	time: Date;
 	isSunrise: boolean;
 	invertColors: boolean;
+	showIcons: boolean;
 }
 
 const SunEventItem = React.memo(function SunEventItem({
 	time,
 	isSunrise,
 	invertColors,
+	showIcons,
 }: SunEventItemProps) {
 	const IconComponent = isSunrise ? IconSunrise : IconSunset;
 	const label = isSunrise ? "Sunrise" : "Sunset";
@@ -258,12 +265,14 @@ const SunEventItem = React.memo(function SunEventItem({
 			</StyledText>
 			<View style={styles.infoContainer}>
 				<View style={styles.firstLine}>
-					<IconComponent
-						width={n(32)}
-						height={n(32)}
-						fill={invertColors ? "black" : "white"}
-					/>
-					<StyledText style={styles.firstLineText}>{label}</StyledText>
+					{showIcons && (
+						<IconComponent
+							width={n(32)}
+							height={n(32)}
+							fill={invertColors ? "black" : "white"}
+						/>
+					)}
+					<StyledText style={[styles.firstLineText, showIcons && styles.firstLineTextWithIcon]}>{label}</StyledText>
 				</View>
 			</View>
 		</View>
@@ -277,6 +286,7 @@ const HourlyForecast = React.memo(function HourlyForecast({
 	airQualityData,
 }: HourlyForecastProps) {
 	const { invertColors } = useInvertColors();
+	const { showIcons } = useShowIcons();
 	const units = useUnits();
 	return (
 		<View style={styles.container}>
@@ -308,6 +318,7 @@ const HourlyForecast = React.memo(function HourlyForecast({
 							time={eventDate}
 							isSunrise={isSunrise}
 							invertColors={invertColors}
+							showIcons={showIcons}
 						/>
 					);
 				}
@@ -348,6 +359,7 @@ const HourlyForecast = React.memo(function HourlyForecast({
 							hourlyData.weatherCode[index] as number
 						)}
 						invertColors={invertColors}
+						showIcons={showIcons}
 					/>
 				);
 			})}
@@ -382,6 +394,8 @@ const styles = StyleSheet.create({
 	},
 	firstLineText: {
 		fontSize: n(26),
+	},
+	firstLineTextWithIcon: {
 		paddingLeft: n(8),
 	},
 	secondLine: {
