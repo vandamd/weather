@@ -26,16 +26,24 @@ interface DailyVariableData {
 }
 
 /**
- * Get daily max from hourly air quality data
- * Each day has 24 hourly values (index 0-23 for day 0, 24-47 for day 1, etc.)
+ * Get daily max from hourly air quality data by matching timestamps
+ * Compares the date portion of hourly timestamps with the target day
  */
 const getDailyMaxFromHourly = (
     hourlyData: number[],
-    dayIndex: number
+    hourlyTime: Date[],
+    targetDate: Date
 ): number | null => {
-    const startHour = dayIndex * 24;
-    const endHour = startHour + 24;
-    const dayValues = hourlyData.slice(startHour, endHour).filter((v) => v != null);
+    const targetDateStr = targetDate.toISOString().slice(0, 10);
+    const dayValues: number[] = [];
+
+    for (let i = 0; i < hourlyTime.length; i++) {
+        const hourDateStr = hourlyTime[i].toISOString().slice(0, 10);
+        if (hourDateStr === targetDateStr && hourlyData[i] != null) {
+            dayValues.push(hourlyData[i]);
+        }
+    }
+
     if (dayValues.length === 0) return null;
     return Math.max(...dayValues);
 };
@@ -45,7 +53,8 @@ const getDailyVariableData = (
     variableName: string,
     index: number,
     units: ReturnType<typeof useUnits>,
-    airQualityData?: AirQualityData | null
+    airQualityData?: AirQualityData | null,
+    targetDate?: Date
 ): DailyVariableData => {
     const { windSpeedUnit, precipitationUnit } = units;
 
@@ -124,8 +133,8 @@ const getDailyVariableData = (
                 unit: "hPa",
             };
         case "AQI (US)": {
-            const maxVal = airQualityData
-                ? getDailyMaxFromHourly(airQualityData.hourly.usAqi, index)
+            const maxVal = airQualityData && targetDate
+                ? getDailyMaxFromHourly(airQualityData.hourly.usAqi, airQualityData.hourly.time, targetDate)
                 : null;
             return {
                 label: "AQI:",
@@ -134,8 +143,8 @@ const getDailyVariableData = (
             };
         }
         case "AQI (EU)": {
-            const maxVal = airQualityData
-                ? getDailyMaxFromHourly(airQualityData.hourly.europeanAqi, index)
+            const maxVal = airQualityData && targetDate
+                ? getDailyMaxFromHourly(airQualityData.hourly.europeanAqi, airQualityData.hourly.time, targetDate)
                 : null;
             return {
                 label: "AQI:",
@@ -144,8 +153,8 @@ const getDailyVariableData = (
             };
         }
         case "PM2.5": {
-            const maxVal = airQualityData
-                ? getDailyMaxFromHourly(airQualityData.hourly.pm25, index)
+            const maxVal = airQualityData && targetDate
+                ? getDailyMaxFromHourly(airQualityData.hourly.pm25, airQualityData.hourly.time, targetDate)
                 : null;
             return {
                 label: "PM:",
@@ -154,8 +163,8 @@ const getDailyVariableData = (
             };
         }
         case "PM10": {
-            const maxVal = airQualityData
-                ? getDailyMaxFromHourly(airQualityData.hourly.pm10, index)
+            const maxVal = airQualityData && targetDate
+                ? getDailyMaxFromHourly(airQualityData.hourly.pm10, airQualityData.hourly.time, targetDate)
                 : null;
             return {
                 label: "PM:",
@@ -274,7 +283,8 @@ const WeeklyForecast = React.memo(function WeeklyForecast({
                             detail,
                             index,
                             units,
-                            airQualityData
+                            airQualityData,
+                            weeklyData.time[index]
                         );
                         const isLast = detailIdx === selectedDetails.length - 1;
                         const hasWindArrow =

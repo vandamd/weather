@@ -97,6 +97,7 @@ export const CurrentLocationProvider = ({
 				setErrorMsg("Permission to access location was denied");
 				console.log("Location permission denied.");
 				setDataLoaded(true);
+				isFetchingRef.current = false;
 				return;
 			}
 
