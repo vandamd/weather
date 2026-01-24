@@ -1,38 +1,45 @@
-import React, { useEffect, useState } from "react";
-import { Text, StyleSheet, View } from "react-native";
+import { useEffect, useState } from "react";
+import { StyleSheet, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import ContentContainer from "@/components/ContentContainer";
 import { StyledButton } from "@/components/StyledButton";
+import { StyledText } from "@/components/StyledText";
 import { GeocodingResult, searchLocations } from "@/utils/geocoding";
-import { useInvertColors } from "@/contexts/InvertColorsContext";
 import CustomScrollView from "@/components/CustomScrollView";
 import iso311a2 from "iso-3166-1-alpha-2";
+import { n } from "@/utils/scaling";
+import { formatLocationName } from "@/utils/formatting";
 
 export default function SearchResultsScreen() {
 	const { query } = useLocalSearchParams<{ query?: string }>();
 	const [results, setResults] = useState<GeocodingResult[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-	const { invertColors } = useInvertColors();
 
 	useEffect(() => {
+		let canceled = false;
+
 		if (query) {
 			const fetchResults = async () => {
 				setLoading(true);
 				setError(null);
 				try {
 					const data = await searchLocations(query);
+					if (canceled) return;
 					if (data.length === 0) {
 						setError("No results found for your query.");
 					}
 					setResults(data);
 				} catch (e) {
+					if (canceled) return;
 					console.error(e);
 					setError(
 						"Failed to fetch search results. Please try again."
 					);
 				} finally {
-					setLoading(false);
+					if (!canceled) {
+						setLoading(false);
+					}
 				}
 			};
 			fetchResults();
@@ -40,69 +47,47 @@ export default function SearchResultsScreen() {
 			setLoading(false);
 			setError("No search query provided.");
 		}
+
+		return () => {
+			canceled = true;
+		};
 	}, [query]);
 
 	const handlePressLocation = (location: GeocodingResult) => {
 		router.push({
-			pathname: "/search/location-weather",
+			pathname: "/search/weather",
 			params: {
 				latitude: location.latitude.toString(),
 				longitude: location.longitude.toString(),
 				name: location.name,
-                admin1: location.admin1 ?? "",
-				country: iso311a2.getCountry(location.country_code),
+				admin1: location.admin1 ?? "",
+				country: iso311a2.getCountry(location.country_code) ?? location.country_code,
 				id: location.id.toString(),
 			},
-		} as any);
+		});
 	};
 
 	return (
 		<ContentContainer
 			headerTitle={`Results for "${query || ""}"`}
-			style={{ paddingBottom: 20 }}
+			style={{ paddingBottom: n(20) }}
 		>
 			<CustomScrollView style={styles.container}>
 				{loading && (
-					<Text
-						style={[
-							styles.messageText,
-							{ color: invertColors ? "black" : "white" },
-						]}
-					>
-						Loading...
-					</Text>
+					<StyledText style={styles.messageText}>Loading...</StyledText>
 				)}
 				{error && (
-					<Text
-						style={[
-							styles.messageText,
-							{ color: invertColors ? "black" : "white" },
-						]}
-					>
-						{error}
-					</Text>
-				)}
-				{!loading && !error && results.length === 0 && (
-					<Text
-						style={[
-							styles.messageText,
-							{ color: invertColors ? "black" : "white" },
-						]}
-					>
-						No results found.
-					</Text>
+					<StyledText style={styles.messageText}>{error}</StyledText>
 				)}
 				{!loading &&
 					!error &&
 					results.map((location) => (
-						<View key={location.id} style={{ marginBottom: 16 }}>
+						<View key={location.id} style={styles.resultItem}>
 							<StyledButton
-								text={`${location.name}${
-									location.admin1 &&
-									location.admin1 !== location.name
-										? `, ${location.admin1}`
-										: ""
-								}, ${iso311a2.getCountry(location.country_code)}`}
+								text={formatLocationName({
+									...location,
+									country: iso311a2.getCountry(location.country_code) ?? location.country_code,
+								})}
 								onPress={() => handlePressLocation(location)}
 								fontSize={28}
 							/>
@@ -119,7 +104,9 @@ const styles = StyleSheet.create({
 	},
 	messageText: {
 		textAlign: "center",
-		fontSize: 16,
-		fontFamily: "PublicSans-Regular",
+		fontSize: n(16),
+	},
+	resultItem: {
+		marginBottom: n(16),
 	},
 });

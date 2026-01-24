@@ -1,9 +1,10 @@
 import React, { ReactNode } from "react";
 import { View, StyleSheet } from "react-native";
 import { useInvertColors } from "@/contexts/InvertColorsContext";
+import { useShowIcons } from "@/contexts/ShowIconsContext";
 import { StyledText } from "@/components/StyledText";
 import { getWeatherIcon } from "@/utils/weatherIconMap";
-import { scaledFontSize, normalizedSize } from "@/utils/fontScaling";
+import { n } from "@/utils/scaling";
 import { formatNumber } from "@/utils/numberFormatting";
 
 interface CurrentSummaryProps {
@@ -24,15 +25,18 @@ export default function CurrentSummary({
 	isDay,
 }: CurrentSummaryProps) {
 	const { invertColors } = useInvertColors();
+	const { showIcons } = useShowIcons();
 	const WeatherIcon = getWeatherIcon(weatherCode, isDay);
 	return (
 		<View style={styles.container}>
 			<View style={styles.topHalf}>
-				<WeatherIcon
-					width={normalizedSize(100)}
-					height={normalizedSize(100)}
-					fill={invertColors ? "black" : "white"}
-				/>
+				{showIcons && (
+					<WeatherIcon
+						width={n(100)}
+						height={n(100)}
+						fill={invertColors ? "black" : "white"}
+					/>
+				)}
 				<StyledText style={styles.currentTemperature}>
 					{formatNumber(currentTemperature, 0)}°
 				</StyledText>
@@ -60,7 +64,7 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		justifyContent: "center",
 		alignItems: "center",
-		gap: normalizedSize(4),
+		gap: n(4),
 	},
 	bottomHalf: {
 		flexDirection: "row",
@@ -68,13 +72,10 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	currentTemperature: {
-		fontSize: scaledFontSize(88),
-		lineHeight: normalizedSize(86),
+		fontSize: n(88),
+		lineHeight: n(86),
 	},
 	apparentTemperature: {
-		fontSize: scaledFontSize(20),
-	},
-	rangeTemperature: {
-		fontSize: scaledFontSize(20),
+		fontSize: n(20),
 	},
 });

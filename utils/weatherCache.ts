@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { WeatherData } from "./weather";
 
 const CACHE_KEY = "weather_cache_current_location";
+const CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutes
 
 interface CachedWeatherData {
 	data: WeatherData;
@@ -84,6 +85,15 @@ export async function setCachedWeather(
 }
 
 /**
+ * Check if cached data is still valid (within TTL)
+ */
+export async function isCacheValid(): Promise<boolean> {
+	const age = await getCacheAge();
+	if (age === null) return false;
+	return age < CACHE_TTL_MS;
+}
+
+/**
  * Get the age of cached data in milliseconds
  */
 export async function getCacheAge(): Promise<number | null> {
@@ -99,16 +109,5 @@ export async function getCacheAge(): Promise<number | null> {
 	} catch (error) {
 		console.error("Error getting cache age:", error);
 		return null;
-	}
-}
-
-/**
- * Clear cached weather data
- */
-export async function clearCachedWeather(): Promise<void> {
-	try {
-		await AsyncStorage.removeItem(CACHE_KEY);
-	} catch (error) {
-		console.error("Error clearing cached weather:", error);
 	}
 }

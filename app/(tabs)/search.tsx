@@ -1,25 +1,17 @@
+import { useState, useCallback } from "react";
+import { StyleSheet, View, Text } from "react-native";
 import { router, useFocusEffect } from "expo-router";
-import { useCallback, useState } from "react";
-import {
-	TextInput,
-	StyleSheet,
-	View,
-	Text,
-	ScrollView,
-	TouchableOpacity,
-} from "react-native";
 import ContentContainer from "@/components/ContentContainer";
-import { SavedLocation, getSavedLocations } from "@/utils/savedLocations";
+import { SearchInput } from "@/components/SearchInput";
 import { StyledButton } from "@/components/StyledButton";
-import { useInvertColors } from "@/contexts/InvertColorsContext";
 import CustomScrollView from "@/components/CustomScrollView";
-import { MaterialIcons } from "@expo/vector-icons";
-import * as Haptics from "expo-haptics";
-import { HapticPressable } from "@/components/HapticPressable";
-import { scaledFontSize, normalizedSize } from "@/utils/fontScaling";
+import { useInvertColors } from "@/contexts/InvertColorsContext";
+import { SavedLocation, getSavedLocations } from "@/utils/savedLocations";
+import { n } from "@/utils/scaling";
+import { formatLocationName } from "@/utils/formatting";
 
 export default function SearchScreen() {
-	const [searchQuery, setSearchQuery] = useState("");
+	const [query, setQuery] = useState("");
 	const [savedLocations, setSavedLocations] = useState<SavedLocation[]>([]);
 	const { invertColors } = useInvertColors();
 
@@ -33,9 +25,18 @@ export default function SearchScreen() {
 		}, [])
 	);
 
+	const handleSearch = () => {
+		if (query.length > 0) {
+			router.push({
+				pathname: "/search/results",
+				params: { query },
+			});
+		}
+	};
+
 	const handlePressSavedLocation = (location: SavedLocation) => {
 		router.push({
-			pathname: "/search/location-weather",
+			pathname: "/search/weather",
 			params: {
 				latitude: location.latitude.toString(),
 				longitude: location.longitude.toString(),
@@ -44,72 +45,24 @@ export default function SearchScreen() {
 				country: location.country,
 				id: location.id.toString(),
 			},
-		} as any);
+		});
 	};
 
 	return (
 		<ContentContainer
 			headerTitle="Search"
-			hideBackButton={true}
-			headerIcon="search"
-			headerIconShowLength={searchQuery.length}
-			headerIconPress={() => {
-				if (searchQuery.length > 0) {
-					router.push(
-						`/search/search-results?query=${encodeURIComponent(
-							searchQuery
-						)}` as any
-					);
-				}
-			}}
-			style={{ gap: 32 }}
+			hideBackButton
+			rightIcon="search"
+			showRightIcon={query.length > 0}
+			onRightIconPress={handleSearch}
+			style={styles.container}
 		>
-			<View
-				style={[
-					styles.inputContainer,
-					{ borderBottomColor: invertColors ? "black" : "white" },
-				]}
-			>
-				<TextInput
-					style={[
-						styles.input,
-						{ color: invertColors ? "black" : "white" },
-					]}
-					placeholderTextColor="#888"
-					value={searchQuery}
-					placeholder="Search for a location"
-					onChangeText={setSearchQuery}
-					cursorColor={invertColors ? "black" : "white"}
-					selectionColor={invertColors ? "black" : "white"}
-					allowFontScaling={false}
-					onSubmitEditing={() => {
-						if (searchQuery.length > 0) {
-							router.push(
-								`/search/search-results?query=${encodeURIComponent(
-									searchQuery
-								)}` as any
-							);
-						}
-					}}
-				/>
-				{searchQuery.length > 0 && (
-					<HapticPressable
-						style={styles.clearButton}
-						onPress={() => {
-							setSearchQuery("");
-							Haptics.impactAsync(
-								Haptics.ImpactFeedbackStyle.Medium
-							);
-						}}
-					>
-						<MaterialIcons
-							name="clear"
-							size={normalizedSize(24)}
-							color={invertColors ? "black" : "white"}
-						/>
-					</HapticPressable>
-				)}
-			</View>
+			<SearchInput
+				value={query}
+				onChangeText={setQuery}
+				placeholder="Search for a location"
+				onSubmit={handleSearch}
+			/>
 			{savedLocations.length > 0 && (
 				<View style={styles.savedLocationsContainer}>
 					<Text
@@ -125,15 +78,10 @@ export default function SearchScreen() {
 						{savedLocations.map((location) => (
 							<View
 								key={location.id}
-								style={{ marginBottom: normalizedSize(15) }}
+								style={{ marginBottom: n(15) }}
 							>
 								<StyledButton
-									text={`${location.name}${
-										location.admin1 &&
-										location.admin1 !== location.name
-											? `, ${location.admin1}`
-											: ""
-									}, ${location.country}`}
+									text={formatLocationName(location)}
 									onPress={() =>
 										handlePressSavedLocation(location)
 									}
@@ -149,29 +97,16 @@ export default function SearchScreen() {
 }
 
 const styles = StyleSheet.create({
-	inputContainer: {
-		flexDirection: "row",
-		alignItems: "center",
-		width: "100%",
-		borderBottomWidth: normalizedSize(1),
-	},
-	input: {
-		flex: 1,
-		fontSize: scaledFontSize(24),
-		fontFamily: "PublicSans-Regular",
-		paddingVertical: normalizedSize(2),
-		textAlign: "left",
-		paddingBottom: normalizedSize(6),
-	},
-	clearButton: {
-		padding: normalizedSize(5),
+	container: {
+		gap: n(32),
+		paddingBottom: n(20),
 	},
 	savedLocationsContainer: {
 		flex: 1,
 	},
 	savedLocationsTitle: {
-		fontSize: scaledFontSize(20),
+		fontSize: n(20),
 		fontFamily: "PublicSans-Regular",
-		marginBottom: normalizedSize(4),
+		marginBottom: n(4),
 	},
 });

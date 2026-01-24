@@ -9,13 +9,9 @@ import {
 	NativeScrollEvent,
 } from "react-native";
 import { useInvertColors } from "@/contexts/InvertColorsContext";
-import { normalizedSize } from "@/utils/fontScaling";
+import { n } from "@/utils/scaling";
 
-interface CustomScrollViewProps extends ScrollViewProps {
-	// We can add any custom props here if needed in the future
-}
-
-const CustomScrollView: React.FC<PropsWithChildren<CustomScrollViewProps>> = ({
+const CustomScrollView: React.FC<PropsWithChildren<ScrollViewProps>> = ({
 	children,
 	style,
 	contentContainerStyle,
@@ -32,8 +28,8 @@ const CustomScrollView: React.FC<PropsWithChildren<CustomScrollViewProps>> = ({
 		contentHeight > scrollViewHeight
 			? Math.max(
 					(scrollViewHeight * scrollViewHeight) / contentHeight,
-					normalizedSize(20)
-			  ) // Min height of 20
+					n(20)
+			  )
 			: 0;
 
 	const scrollIndicatorPosition =
@@ -87,7 +83,7 @@ const CustomScrollView: React.FC<PropsWithChildren<CustomScrollViewProps>> = ({
 				<View
 					style={[
 						styles.scrollIndicatorTrack,
-						{ transform: [{ translateX: normalizedSize(1) }] },
+						{ transform: [{ translateX: n(1) }] },
 						{ backgroundColor: invertColors ? "black" : "white" },
 					]}
 				>
@@ -123,15 +119,15 @@ const styles = StyleSheet.create({
 		width: "100%",
 	},
 	scrollIndicatorTrack: {
-		width: normalizedSize(1),
+		width: n(1),
 		height: "100%",
 		position: "absolute",
-		right: normalizedSize(-18),
+		right: n(-18),
 	},
 	scrollIndicatorThumb: {
-		width: normalizedSize(5),
+		width: n(5),
 		position: "absolute",
-		right: normalizedSize(-2),
+		right: n(-2),
 	},
 });
 
