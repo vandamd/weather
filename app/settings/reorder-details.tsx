@@ -1,4 +1,3 @@
-import React from "react";
 import { StyleSheet } from "react-native";
 import ContentContainer from "@/components/ContentContainer";
 import CustomScrollView from "@/components/CustomScrollView";

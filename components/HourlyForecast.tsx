@@ -323,7 +323,6 @@ const HourlyForecast = React.memo(function HourlyForecast({
 					);
 				}
 
-				// Build detail segments for inline wind arrow placement
 				const detailSegments: DetailSegment[] = selectedDetails.map(
 					(detail, detailIdx) => {
 						const data = getVariableDataAndUnit(
@@ -336,7 +335,6 @@ const HourlyForecast = React.memo(function HourlyForecast({
 						const isLast = detailIdx === selectedDetails.length - 1;
 						const hasWindArrow =
 							detail === "Wind Speed" && data.windAngle !== undefined;
-						// Put comma after arrow, not before
 						const text = `${data.label} ${data.value}${data.unit}`;
 						const suffix = isLast ? "" : " • ";
 						return {

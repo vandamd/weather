@@ -98,42 +98,38 @@ export function Header({
 	const hasLeftButton = !hideBackButton || Boolean(leftIcon);
 	const hasRightButton = Boolean(rightText) || Boolean(rightIcon && showRightIcon);
 
+	const titleElement = (
+		<StyledText
+			style={[
+				styles.title,
+				!hasLeftButton && !hasRightButton && styles.titleWide,
+			]}
+			numberOfLines={1}
+		>
+			{headerTitle}
+		</StyledText>
+	);
+
 	return (
 		<View
 			style={[
 				styles.header,
-                { backgroundColor: invertColors ? "white" : "black" },
-            ]}
+				{ backgroundColor: invertColors ? "white" : "black" },
+			]}
 		>
 			{renderLeftButton()}
 			<View style={styles.titleContainer}>
 				{onTitlePress ? (
 					<HapticPressable onPress={onTitlePress}>
-						<StyledText
-							style={[
-								styles.title,
-								!hasLeftButton && !hasRightButton && styles.titleWide,
-							]}
-							numberOfLines={1}
-						>
-							{headerTitle}
-						</StyledText>
+						{titleElement}
 					</HapticPressable>
 				) : (
-					<StyledText
-						style={[
-							styles.title,
-							!hasLeftButton && !hasRightButton && styles.titleWide,
-						]}
-						numberOfLines={1}
-					>
-						{headerTitle}
-					</StyledText>
+					titleElement
 				)}
 			</View>
 			{renderRightButton()}
-        </View>
-    );
+		</View>
+	);
 }
 
 const styles = StyleSheet.create({

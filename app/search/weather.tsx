@@ -20,6 +20,7 @@ import { useUnits } from "@/contexts/UnitsContext";
 import { useDetails } from "@/contexts/DetailsContext";
 import CustomScrollView from "@/components/CustomScrollView";
 import { n } from "@/utils/scaling";
+import { formatLocationName } from "@/utils/formatting";
 
 export default function LocationWeatherScreen() {
     const units = useUnits();
@@ -93,31 +94,19 @@ export default function LocationWeatherScreen() {
 
     useEffect(() => {
         const name = params.name ?? "Selected Location";
-        const admin1 = params.admin1;
-        const country = params.country;
+        const country = params.country ?? "";
         const idStr = params.id;
 
-        let displayName = name;
-        if (admin1 && country) {
-            displayName = `${name}${
-                admin1 && admin1 !== name ? `, ${admin1}` : ""
-            }, ${country}`;
-        } else if (admin1 && !country) {
-            displayName = `${name}, ${admin1}`;
-        } else if (country) {
-            displayName = `${name}, ${country}`;
-        }
+        const displayName = country
+            ? formatLocationName({ name, admin1: params.admin1, country })
+            : name;
         setLocationName(displayName);
 
         const id = idStr ? parseInt(idStr, 10) : null;
         setCurrentLocationId(id);
 
         if (id) {
-            const checkSaved = async () => {
-                const savedStatus = await isLocationSaved(id);
-                setIsSaved(savedStatus);
-            };
-            checkSaved();
+            isLocationSaved(id).then(setIsSaved);
         }
     }, [params.name, params.admin1, params.country, params.id]);
 

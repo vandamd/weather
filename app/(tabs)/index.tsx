@@ -16,14 +16,13 @@ export default function CurrentLocationScreen() {
 		currentLocation,
 		weatherData,
 		airQualityData,
-		errorMsg,
 		dataLoaded,
 		lastUpdated,
 		refetchWeather,
 	} = useCurrentLocation();
 	const { invertColors } = useInvertColors();
 	const { selectedDetails } = useDetails();
-	const headerTitle = currentLocation?.toString() || "";
+	const headerTitle = currentLocation || "";
 
 	useFocusEffect(
 		useCallback(() => {

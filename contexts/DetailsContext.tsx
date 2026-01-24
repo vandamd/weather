@@ -4,6 +4,7 @@ import React, {
 	useState,
 	useEffect,
 	useMemo,
+	useCallback,
 	ReactNode,
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -83,49 +84,47 @@ export const DetailsProvider = ({ children }: { children: ReactNode }) => {
 		});
 	}, []);
 
-	const toggleDetail = async (detail: WeatherDetail) => {
-		const isSelected = selectedDetails.includes(detail);
-		let newDetails: WeatherDetail[];
+	const toggleDetail = useCallback(async (detail: WeatherDetail) => {
+		setSelectedDetails((prev) => {
+			const isSelected = prev.includes(detail);
+			let newDetails: WeatherDetail[];
 
-		if (isSelected) {
-			// Don't allow deselecting if it's the only one
-			if (selectedDetails.length === 1) {
-				return;
+			if (isSelected) {
+				if (prev.length === 1) return prev;
+				newDetails = prev.filter((d) => d !== detail);
+			} else {
+				if (prev.length >= MAX_DETAILS) return prev;
+				newDetails = [...prev, detail];
 			}
-			newDetails = selectedDetails.filter((d) => d !== detail);
-		} else {
-			// Don't allow selecting more than MAX_DETAILS
-			if (selectedDetails.length >= MAX_DETAILS) {
-				return;
-			}
-			newDetails = [...selectedDetails, detail];
-		}
 
-		setSelectedDetails(newDetails);
-		await AsyncStorage.setItem("selectedDetails", JSON.stringify(newDetails));
-	};
+			AsyncStorage.setItem("selectedDetails", JSON.stringify(newDetails));
+			return newDetails;
+		});
+	}, []);
 
-	const isDetailSelected = (detail: WeatherDetail) => {
+	const isDetailSelected = useCallback((detail: WeatherDetail) => {
 		return selectedDetails.includes(detail);
-	};
+	}, [selectedDetails]);
 
-	const reorderDetail = async (detail: WeatherDetail, direction: "up" | "down") => {
-		const currentIndex = selectedDetails.indexOf(detail);
-		if (currentIndex === -1) return;
+	const reorderDetail = useCallback(async (detail: WeatherDetail, direction: "up" | "down") => {
+		setSelectedDetails((prev) => {
+			const currentIndex = prev.indexOf(detail);
+			if (currentIndex === -1) return prev;
 
-		const newIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
-		if (newIndex < 0 || newIndex >= selectedDetails.length) return;
+			const newIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+			if (newIndex < 0 || newIndex >= prev.length) return prev;
 
-		const newDetails = [...selectedDetails];
-		[newDetails[currentIndex], newDetails[newIndex]] = [newDetails[newIndex], newDetails[currentIndex]];
+			const newDetails = [...prev];
+			[newDetails[currentIndex], newDetails[newIndex]] = [newDetails[newIndex], newDetails[currentIndex]];
 
-		setSelectedDetails(newDetails);
-		await AsyncStorage.setItem("selectedDetails", JSON.stringify(newDetails));
-	};
+			AsyncStorage.setItem("selectedDetails", JSON.stringify(newDetails));
+			return newDetails;
+		});
+	}, []);
 
 	const value = useMemo(
 		() => ({ selectedDetails, toggleDetail, isDetailSelected, reorderDetail }),
-		[selectedDetails]
+		[selectedDetails, toggleDetail, isDetailSelected, reorderDetail]
 	);
 
 	return (

@@ -24,6 +24,8 @@ export function Navbar({
     navigation,
 }: NavbarProps) {
     const { invertColors } = useInvertColors();
+    const activeColor = invertColors ? "black" : "white";
+    const inactiveColor = invertColors ? "#C1C1C1" : "#6E6E6E";
 
     return (
         <View
@@ -32,26 +34,21 @@ export function Navbar({
                 { backgroundColor: invertColors ? "white" : "black" },
             ]}
         >
-            {tabsConfig?.map((tab) => (
-                <HapticPressable
-                    key={tab.screenName}
-                    onPress={() => navigation.navigate(tab.screenName)}
-                >
-                    <MaterialIcons
-                        name={tab.iconName}
-                        size={n(48)}
-                        color={
-                            tab.screenName === currentScreenName
-                                ? invertColors
-                                    ? "black"
-                                    : "white"
-                                : invertColors
-                                    ? "#C1C1C1"
-                                    : "#6E6E6E"
-                        }
-                    />
-                </HapticPressable>
-            ))}
+            {tabsConfig?.map((tab) => {
+                const isActive = tab.screenName === currentScreenName;
+                return (
+                    <HapticPressable
+                        key={tab.screenName}
+                        onPress={() => navigation.navigate(tab.screenName)}
+                    >
+                        <MaterialIcons
+                            name={tab.iconName}
+                            size={n(48)}
+                            color={isActive ? activeColor : inactiveColor}
+                        />
+                    </HapticPressable>
+                );
+            })}
         </View>
     );
 }

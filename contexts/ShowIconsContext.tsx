@@ -4,6 +4,7 @@ import React, {
 	useState,
 	useEffect,
 	useMemo,
+	useCallback,
 	ReactNode,
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -31,14 +32,14 @@ export const ShowIconsProvider = ({ children }: { children: ReactNode }) => {
 		});
 	}, []);
 
-	const setShowIcons = async (value: boolean) => {
+	const setShowIcons = useCallback(async (value: boolean) => {
 		setShowIconsState(value);
 		await AsyncStorage.setItem("showIcons", value.toString());
-	};
+	}, []);
 
 	const value = useMemo(
 		() => ({ showIcons, setShowIcons }),
-		[showIcons]
+		[showIcons, setShowIcons]
 	);
 
 	return (

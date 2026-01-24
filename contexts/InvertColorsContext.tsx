@@ -4,6 +4,7 @@ import React, {
 	useState,
 	useEffect,
 	useMemo,
+	useCallback,
 	ReactNode,
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -31,14 +32,14 @@ export const InvertColorsProvider = ({ children }: { children: ReactNode }) => {
 		});
 	}, []);
 
-	const setInvertColors = async (value: boolean) => {
+	const setInvertColors = useCallback(async (value: boolean) => {
 		setInvertColorsState(value);
 		await AsyncStorage.setItem("invertColors", value.toString());
-	};
+	}, []);
 
 	const value = useMemo(
 		() => ({ invertColors, setInvertColors }),
-		[invertColors]
+		[invertColors, setInvertColors]
 	);
 
 	return (

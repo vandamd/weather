@@ -1,4 +1,3 @@
-import React from "react";
 import { StyleSheet } from "react-native";
 import { StyledText } from "./StyledText";
 import { HapticPressable } from "./HapticPressable";
@@ -12,11 +11,10 @@ interface SelectorButtonProps {
 }
 
 export function SelectorButton({ label, value, valueChangePage }: SelectorButtonProps) {
-    const targetPath = valueChangePage;
     return (
         <HapticPressable
             style={styles.button}
-            onPress={() => targetPath && router.push(targetPath as any)}
+            onPress={() => valueChangePage && router.push(valueChangePage as any)}
         >
             <StyledText style={styles.label} numberOfLines={1}>
                 {label}

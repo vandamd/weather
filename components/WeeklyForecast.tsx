@@ -267,7 +267,6 @@ const WeeklyForecast = React.memo(function WeeklyForecast({
                 Weekly Forecast
             </StyledText>
             {weeklyData?.time.map((_, index) => {
-                // Build detail segments for inline wind arrow placement
                 const detailSegments: DetailSegment[] = selectedDetails.map(
                     (detail, detailIdx) => {
                         const data = getDailyVariableData(
@@ -281,7 +280,6 @@ const WeeklyForecast = React.memo(function WeeklyForecast({
                         const hasWindArrow =
                             detail === "Wind Speed" && data.windAngle !== undefined;
                         const text = `${data.label} ${data.value}${data.unit}`;
-                        // Put separator after arrow, not before
                         const suffix = isLast ? "" : " • ";
                         return {
                             text,

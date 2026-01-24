@@ -60,7 +60,6 @@ export const CurrentLocationProvider = ({
 	const appState = useRef(AppState.currentState);
 	const isFetchingRef = useRef(false);
 
-	// Load cached data immediately on mount
 	useEffect(() => {
 		const loadCache = async () => {
 			const [cachedWeather, cachedAirQuality] = await Promise.all([
@@ -86,7 +85,6 @@ export const CurrentLocationProvider = ({
 			return;
 		}
 
-		// Prevent concurrent fetches
 		if (isFetchingRef.current) {
 			return;
 		}
@@ -105,7 +103,6 @@ export const CurrentLocationProvider = ({
 				accuracy: Location.Accuracy.High,
 			});
 
-			// Set a generic location name
 			setCurrentLocation("Current Location");
 
 			const [weatherResult, airQualityResult] = await Promise.all([
@@ -126,7 +123,6 @@ export const CurrentLocationProvider = ({
 			setAirQualityData(airQualityResult);
 			setErrorMsg(null);
 
-			// Cache the fetched data
 			const timestamp = Date.now();
 			const cachePromises: Promise<void>[] = [];
 			if (weatherResult) {
@@ -170,14 +166,12 @@ export const CurrentLocationProvider = ({
 		units.unitsLoaded,
 	]);
 
-	// Initial fetch when units are loaded
 	useEffect(() => {
 		if (units.unitsLoaded && !dataLoaded) {
 			fetchLocationAndWeather();
 		}
 	}, [units.unitsLoaded, dataLoaded, fetchLocationAndWeather]);
 
-	// Refetch when app comes to foreground
 	useEffect(() => {
 		const subscription = AppState.addEventListener(
 			"change",

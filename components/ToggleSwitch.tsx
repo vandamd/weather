@@ -14,51 +14,48 @@ const CIRCLE_BORDER = n(2.5);
 const LINE_WIDTH = n(14.5);
 const LINE_HEIGHT = n(2.22);
 
-const ToggleSwitchGraphic = ({ value }: ToggleSwitchGraphicProps) => {
+const graphicStyles = StyleSheet.create({
+    container: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    circle: {
+        width: CIRCLE_DIAMETER,
+        height: CIRCLE_DIAMETER,
+        borderRadius: CIRCLE_DIAMETER / 2,
+    },
+    hollowCircle: {
+        width: CIRCLE_DIAMETER,
+        height: CIRCLE_DIAMETER,
+        borderRadius: CIRCLE_DIAMETER / 2,
+        borderWidth: CIRCLE_BORDER,
+    },
+    line: {
+        width: LINE_WIDTH,
+        height: LINE_HEIGHT,
+    },
+});
+
+function ToggleSwitchGraphic({ value }: ToggleSwitchGraphicProps) {
     const { invertColors } = useInvertColors();
     const switchColor = invertColors ? "black" : "white";
 
-    const graphicStyles = StyleSheet.create({
-        container: {
-            flexDirection: "row",
-            alignItems: "center",
-        },
-        circle: {
-            width: CIRCLE_DIAMETER,
-            height: CIRCLE_DIAMETER,
-            borderRadius: CIRCLE_DIAMETER / 2,
-            backgroundColor: switchColor,
-        },
-        hollowCircle: {
-            width: CIRCLE_DIAMETER,
-            height: CIRCLE_DIAMETER,
-            borderRadius: CIRCLE_DIAMETER / 2,
-            borderWidth: CIRCLE_BORDER,
-            borderColor: switchColor,
-        },
-        line: {
-            width: LINE_WIDTH,
-            height: LINE_HEIGHT,
-            backgroundColor: switchColor,
-        },
-    });
+    if (value) {
+        return (
+            <View style={graphicStyles.container}>
+                <View style={[graphicStyles.line, { backgroundColor: switchColor }]} />
+                <View style={[graphicStyles.circle, { backgroundColor: switchColor }]} />
+            </View>
+        );
+    }
 
     return (
         <View style={graphicStyles.container}>
-            {!value ? (
-                <>
-                    <View style={graphicStyles.hollowCircle} />
-                    <View style={graphicStyles.line} />
-                </>
-            ) : (
-                <>
-                    <View style={graphicStyles.line} />
-                    <View style={graphicStyles.circle} />
-                </>
-            )}
+            <View style={[graphicStyles.hollowCircle, { borderColor: switchColor }]} />
+            <View style={[graphicStyles.line, { backgroundColor: switchColor }]} />
         </View>
     );
-};
+}
 
 interface ToggleSwitchProps {
     label: string;

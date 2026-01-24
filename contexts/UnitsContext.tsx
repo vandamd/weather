@@ -5,6 +5,7 @@ import React, {
 	useEffect,
 	ReactNode,
 	useMemo,
+	useCallback,
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -69,20 +70,20 @@ export const UnitsProvider = ({ children }: { children: ReactNode }) => {
 		loadUnits();
 	}, []);
 
-	const setTemperatureUnit = async (unit: TemperatureUnit) => {
+	const setTemperatureUnit = useCallback(async (unit: TemperatureUnit) => {
 		setTemperatureUnitState(unit);
 		await AsyncStorage.setItem("temperatureUnit", unit);
-	};
+	}, []);
 
-	const setWindSpeedUnit = async (unit: WindSpeedUnit) => {
+	const setWindSpeedUnit = useCallback(async (unit: WindSpeedUnit) => {
 		setWindSpeedUnitState(unit);
 		await AsyncStorage.setItem("windSpeedUnit", unit);
-	};
+	}, []);
 
-	const setPrecipitationUnit = async (unit: PrecipitationUnit) => {
+	const setPrecipitationUnit = useCallback(async (unit: PrecipitationUnit) => {
 		setPrecipitationUnitState(unit);
 		await AsyncStorage.setItem("precipitationUnit", unit);
-	};
+	}, []);
 
 	const value = useMemo(
 		() => ({
@@ -94,7 +95,7 @@ export const UnitsProvider = ({ children }: { children: ReactNode }) => {
 			setPrecipitationUnit,
 			unitsLoaded,
 		}),
-		[temperatureUnit, windSpeedUnit, precipitationUnit, unitsLoaded]
+		[temperatureUnit, setTemperatureUnit, windSpeedUnit, setWindSpeedUnit, precipitationUnit, setPrecipitationUnit, unitsLoaded]
 	);
 
 	return (
