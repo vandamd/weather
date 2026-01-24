@@ -362,7 +362,7 @@ const styles = StyleSheet.create({
         paddingTop: n(28),
     },
     sectionTitle: {
-        fontSize: n(20),
+        fontSize: n(16),
         paddingBottom: n(4),
     },
 });

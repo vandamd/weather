@@ -414,7 +414,7 @@ const styles = StyleSheet.create({
 		paddingTop: n(32),
 	},
 	sectionTitle: {
-		fontSize: n(19),
+		fontSize: n(16),
 		paddingBottom: n(4),
 	},
 });
