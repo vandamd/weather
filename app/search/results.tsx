@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Text, StyleSheet, View } from "react-native";
+import { useEffect, useState } from "react";
+import { StyleSheet, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import ContentContainer from "@/components/ContentContainer";
 import { StyledButton } from "@/components/StyledButton";
+import { StyledText } from "@/components/StyledText";
 import { GeocodingResult, searchLocations } from "@/utils/geocoding";
-import { useInvertColors } from "@/contexts/InvertColorsContext";
 import CustomScrollView from "@/components/CustomScrollView";
 import iso311a2 from "iso-3166-1-alpha-2";
 import { n } from "@/utils/scaling";
@@ -15,7 +15,6 @@ export default function SearchResultsScreen() {
 	const [results, setResults] = useState<GeocodingResult[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-	const { invertColors } = useInvertColors();
 
 	useEffect(() => {
 		let canceled = false;
@@ -75,42 +74,15 @@ export default function SearchResultsScreen() {
 		>
 			<CustomScrollView style={styles.container}>
 				{loading && (
-					<Text
-						style={[
-							styles.messageText,
-							{ color: invertColors ? "black" : "white" },
-						]}
-						allowFontScaling={false}
-					>
-						Loading...
-					</Text>
+					<StyledText style={styles.messageText}>Loading...</StyledText>
 				)}
 				{error && (
-					<Text
-						style={[
-							styles.messageText,
-							{ color: invertColors ? "black" : "white" },
-						]}
-						allowFontScaling={false}
-					>
-						{error}
-					</Text>
-				)}
-				{!loading && !error && results.length === 0 && (
-					<Text
-						style={[
-							styles.messageText,
-							{ color: invertColors ? "black" : "white" },
-						]}
-						allowFontScaling={false}
-					>
-						No results found.
-					</Text>
+					<StyledText style={styles.messageText}>{error}</StyledText>
 				)}
 				{!loading &&
 					!error &&
 					results.map((location) => (
-						<View key={location.id} style={{ marginBottom: n(16) }}>
+						<View key={location.id} style={styles.resultItem}>
 							<StyledButton
 								text={formatLocationName({
 									...location,
@@ -133,6 +105,8 @@ const styles = StyleSheet.create({
 	messageText: {
 		textAlign: "center",
 		fontSize: n(16),
-		fontFamily: "PublicSans-Regular",
+	},
+	resultItem: {
+		marginBottom: n(16),
 	},
 });

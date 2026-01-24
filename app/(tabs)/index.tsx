@@ -28,7 +28,7 @@ export default function CurrentLocationScreen() {
 		useCallback(() => {
 			if (dataLoaded && lastUpdated) {
 				const timeSinceLastUpdate = Date.now() - lastUpdated;
-				if (timeSinceLastUpdate > 60000) { // 1 minute minimum
+				if (timeSinceLastUpdate > 60000) {
 					refetchWeather();
 				}
 			}
@@ -47,7 +47,7 @@ export default function CurrentLocationScreen() {
 		);
 	}
 
-	return weatherData ? (
+	return (
 		<ContentContainer
 			headerTitle={headerTitle}
 			hideBackButton={true}
@@ -55,39 +55,27 @@ export default function CurrentLocationScreen() {
 			showRightIcon={true}
 			onRightIconPress={() => router.push("/settings/details")}
 		>
-			<CustomScrollView style={{ width: "100%" }} overScrollMode="never">
-				<CurrentSummary
-					currentTemperature={weatherData?.current.temperature2m ?? 0}
-					apparentTemperature={
-						weatherData?.current.apparentTemperature ?? 0
-					}
-					maxTemperature={
-						weatherData?.daily.temperature2mMax?.[0] as number
-					}
-					minTemperature={
-						weatherData?.daily.temperature2mMin?.[0] as number
-					}
-					weatherCode={weatherData?.current.weatherCode ?? 0}
-					isDay={weatherData?.current.isDay ?? 0}
-				/>
-				<HourlyForecast
-					hourlyData={weatherData?.hourly}
-					dailyData={weatherData?.daily}
-					selectedDetails={selectedDetails}
-				/>
-				<WeeklyForecast
-					weeklyData={weatherData?.daily}
-					selectedDetails={selectedDetails}
-				/>
-			</CustomScrollView>
+			{weatherData && (
+				<CustomScrollView style={{ width: "100%" }} overScrollMode="never">
+					<CurrentSummary
+						currentTemperature={weatherData.current.temperature2m ?? 0}
+						apparentTemperature={weatherData.current.apparentTemperature ?? 0}
+						maxTemperature={weatherData.daily.temperature2mMax?.[0] as number}
+						minTemperature={weatherData.daily.temperature2mMin?.[0] as number}
+						weatherCode={weatherData.current.weatherCode ?? 0}
+						isDay={weatherData.current.isDay ?? 0}
+					/>
+					<HourlyForecast
+						hourlyData={weatherData.hourly}
+						dailyData={weatherData.daily}
+						selectedDetails={selectedDetails}
+					/>
+					<WeeklyForecast
+						weeklyData={weatherData.daily}
+						selectedDetails={selectedDetails}
+					/>
+				</CustomScrollView>
+			)}
 		</ContentContainer>
-	) : (
-		<ContentContainer
-			headerTitle={headerTitle}
-			hideBackButton={true}
-			rightIcon="tune"
-			showRightIcon={true}
-			onRightIconPress={() => router.push("/settings/details")}
-		/>
 	);
 }

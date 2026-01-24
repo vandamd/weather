@@ -15,19 +15,19 @@ export default function SettingsScreen() {
             headerTitle={`Settings (v${version})`}
             hideBackButton={true}
         >
-                <ToggleSwitch
-                    value={invertColors}
-                    label="Invert Colours"
-                    onValueChange={setInvertColors}
-                />
-                <StyledButton
-                    text="Weather Details"
-                    onPress={() => router.push("/settings/details")}
-                />
-                <StyledButton
-                    text="Units"
-                    onPress={() => router.push("/settings/units")}
-                />
+            <ToggleSwitch
+                value={invertColors}
+                label="Invert Colours"
+                onValueChange={setInvertColors}
+            />
+            <StyledButton
+                text="Weather Details"
+                onPress={() => router.push("/settings/details")}
+            />
+            <StyledButton
+                text="Units"
+                onPress={() => router.push("/settings/units")}
+            />
         </ContentContainer>
     );
 }
