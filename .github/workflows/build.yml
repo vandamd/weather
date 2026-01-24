@@ -1,0 +1,77 @@
+name: Android App APK Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Expo
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Get app info from app.json
+        id: get_app_info
+        run: |
+          VERSION=$(node -p "require('./app.json').expo.version")
+          APP_NAME=$(node -p "require('./app.json').expo.slug")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build Android app
+        run: eas build --platform android --profile production --local --output ${{ github.workspace }}/${{ env.APP_NAME }}_${{ env.VERSION }}.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: ${{ github.workspace }}/${{ env.APP_NAME }}_${{ env.VERSION }}.apk
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          if [ -z "$PREVIOUS_TAG" ]; then
+            CHANGELOG=$(git log --pretty=format:"- %s" --no-merges)
+          else
+            CHANGELOG=$(git log ${PREVIOUS_TAG}..HEAD --pretty=format:"- %s" --no-merges)
+          fi
+          echo "CHANGELOG<<EOF" >> $GITHUB_ENV
+          echo "$CHANGELOG" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ github.workspace }}/${{ env.APP_NAME }}_${{ env.VERSION }}.apk
+          tag_name: v${{ env.VERSION }}
+          body: |
+            ## What's Changed
+            ${{ env.CHANGELOG }}
