@@ -21,6 +21,7 @@ import {
 import {
 	getCachedAirQuality,
 	setCachedAirQuality,
+	isAirQualityCacheValid,
 } from "@/utils/airQualityCache";
 
 interface CurrentLocationContextType {
@@ -180,8 +181,11 @@ export const CurrentLocationProvider = ({
 					appState.current.match(/inactive|background/) &&
 					nextAppState === "active"
 				) {
-					const cacheValid = await isCacheValid();
-					if (!cacheValid) {
+					const [weatherCacheValid, airQualityCacheValid] = await Promise.all([
+						isCacheValid(),
+						isAirQualityCacheValid(),
+					]);
+					if (!weatherCacheValid || !airQualityCacheValid) {
 						fetchLocationAndWeather();
 					}
 				}

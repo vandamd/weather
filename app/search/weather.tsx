@@ -45,20 +45,26 @@ export default function LocationWeatherScreen() {
         null
     );
     const appState = useRef(AppState.currentState);
+    const isFetchingRef = useRef(false);
 
     const fetchWeather = useCallback(async () => {
         if (!units.unitsLoaded) {
             return;
         }
 
+        if (isFetchingRef.current) {
+            return;
+        }
+        isFetchingRef.current = true;
+
         const latStr = params.latitude;
         const lonStr = params.longitude;
         const lat = parseFloat(latStr ?? "0");
         const lon = parseFloat(lonStr ?? "0");
 
-        if (lat && lon) {
-            setErrorMsg(null);
-            try {
+        try {
+            if (lat && lon) {
+                setErrorMsg(null);
                 const [weatherResult, airQualityResult] = await Promise.all([
                     getWeatherData(
                         lat,
@@ -76,12 +82,14 @@ export default function LocationWeatherScreen() {
                         "Could not fetch weather data for this location."
                     );
                 }
-            } catch (error) {
-                setErrorMsg("Error fetching weather data");
-                console.error("Error fetching weather data:", error);
+            } else {
+                setErrorMsg("Invalid location coordinates provided.");
             }
-        } else {
-            setErrorMsg("Invalid location coordinates provided.");
+        } catch (error) {
+            setErrorMsg("Error fetching weather data");
+            console.error("Error fetching weather data:", error);
+        } finally {
+            isFetchingRef.current = false;
         }
     }, [
         params.latitude,
