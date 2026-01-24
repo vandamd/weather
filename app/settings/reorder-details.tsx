@@ -3,23 +3,8 @@ import { StyleSheet } from "react-native";
 import ContentContainer from "@/components/ContentContainer";
 import CustomScrollView from "@/components/CustomScrollView";
 import { StyledButton } from "@/components/StyledButton";
-import { useDetails, WeatherDetail } from "@/contexts/DetailsContext";
+import { useDetails, DETAIL_SHORTHANDS } from "@/contexts/DetailsContext";
 import { n } from "@/utils/scaling";
-
-const DETAIL_SHORTHANDS: Record<WeatherDetail, string> = {
-    "Temp": "T",
-    "Feels Like": "FL",
-    "Precip Chance": "P",
-    "Precip Amount": "P",
-    "Wind Speed": "W",
-    "Wind Gusts": "G",
-    "UV Index": "UV",
-    "Humidity": "H",
-    "Dew Point": "DP",
-    "Cloud Cover": "C",
-    "Visibility": "V",
-    "Pressure": "P",
-};
 
 export default function ReorderDetailsScreen() {
     const { selectedDetails, reorderDetail } = useDetails();
