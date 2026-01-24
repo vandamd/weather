@@ -2,11 +2,13 @@ import ContentContainer from "@/components/ContentContainer";
 import CustomScrollView from "@/components/CustomScrollView";
 import { SelectorButton } from "@/components/SelectorButton";
 import { useUnits } from "@/contexts/UnitsContext";
+import { useTimeFormat } from "@/contexts/TimeFormatContext";
 import { n } from "@/utils/scaling";
 import { StyleSheet } from "react-native";
 
 export default function UnitsScreen() {
     const { temperatureUnit, windSpeedUnit, precipitationUnit } = useUnits();
+    const { timeFormat } = useTimeFormat();
 
     return (
         <ContentContainer
@@ -29,6 +31,11 @@ export default function UnitsScreen() {
                     label="Precipitation"
                     value={precipitationUnit}
                     valueChangePage="/settings/precipitation-unit"
+                />
+                <SelectorButton
+                    label="Time Format"
+                    value={timeFormat === "24h" ? "24 Hour" : "12 Hour"}
+                    valueChangePage="/settings/time-format"
                 />
             </CustomScrollView>
         </ContentContainer>
