@@ -11,6 +11,7 @@ import IconDirectionUp from "@/assets/weather/wi-direction-up.svg";
 import IconSunrise from "@/assets/weather/wi-sunrise.svg";
 import IconSunset from "@/assets/weather/wi-sunset.svg";
 import { useUnits } from "@/contexts/UnitsContext";
+import { useTimeFormat, TimeFormat } from "@/contexts/TimeFormatContext";
 import { n } from "@/utils/scaling";
 import { formatNumber } from "@/utils/numberFormatting";
 
@@ -167,6 +168,7 @@ interface HourlyItemProps {
 	description: string;
 	invertColors: boolean;
 	showIcons: boolean;
+	timeFormat: TimeFormat;
 }
 
 const HourlyItem = React.memo(function HourlyItem({
@@ -177,19 +179,22 @@ const HourlyItem = React.memo(function HourlyItem({
 	description,
 	invertColors,
 	showIcons,
+	timeFormat,
 }: HourlyItemProps) {
 	const WeatherIconComponent = React.useMemo(
 		() => getWeatherIcon(weatherCode, isDay),
 		[weatherCode, isDay]
 	);
 
+	const leftColumnWidth = timeFormat === "12h" ? n(125) : n(84);
+
 	return (
 		<View style={styles.rowContainer}>
-			<StyledText style={styles.leftColumn}>
+			<StyledText style={[styles.leftColumn, { width: leftColumnWidth }]}>
 				{time.toLocaleTimeString([], {
 					hour: "2-digit",
 					minute: "2-digit",
-					hour12: false,
+					hour12: timeFormat === "12h",
 					timeZone: "UTC",
 				})}
 			</StyledText>
@@ -242,6 +247,7 @@ interface SunEventItemProps {
 	isSunrise: boolean;
 	invertColors: boolean;
 	showIcons: boolean;
+	timeFormat: TimeFormat;
 }
 
 const SunEventItem = React.memo(function SunEventItem({
@@ -249,17 +255,20 @@ const SunEventItem = React.memo(function SunEventItem({
 	isSunrise,
 	invertColors,
 	showIcons,
+	timeFormat,
 }: SunEventItemProps) {
 	const IconComponent = isSunrise ? IconSunrise : IconSunset;
 	const label = isSunrise ? "Sunrise" : "Sunset";
 
+	const leftColumnWidth = timeFormat === "12h" ? n(125) : n(84);
+
 	return (
 		<View style={styles.sunEventRow}>
-			<StyledText style={styles.leftColumn}>
+			<StyledText style={[styles.leftColumn, { width: leftColumnWidth }]}>
 				{time.toLocaleTimeString([], {
 					hour: "2-digit",
 					minute: "2-digit",
-					hour12: false,
+					hour12: timeFormat === "12h",
 					timeZone: "UTC",
 				})}
 			</StyledText>
@@ -288,6 +297,7 @@ const HourlyForecast = React.memo(function HourlyForecast({
 	const { invertColors } = useInvertColors();
 	const { showIcons } = useShowIcons();
 	const units = useUnits();
+	const { timeFormat } = useTimeFormat();
 	return (
 		<View style={styles.container}>
 			<StyledText style={styles.sectionTitle}>
@@ -319,6 +329,7 @@ const HourlyForecast = React.memo(function HourlyForecast({
 							isSunrise={isSunrise}
 							invertColors={invertColors}
 							showIcons={showIcons}
+							timeFormat={timeFormat}
 						/>
 					);
 				}
@@ -358,6 +369,7 @@ const HourlyForecast = React.memo(function HourlyForecast({
 						)}
 						invertColors={invertColors}
 						showIcons={showIcons}
+						timeFormat={timeFormat}
 					/>
 				);
 			})}

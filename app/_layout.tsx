@@ -8,6 +8,7 @@ import {
 	useInvertColors,
 } from "@/contexts/InvertColorsContext";
 import { UnitsProvider } from "@/contexts/UnitsContext";
+import { TimeFormatProvider } from "@/contexts/TimeFormatContext";
 import { CurrentLocationProvider } from "@/contexts/CurrentLocationContext";
 import { DetailsProvider } from "@/contexts/DetailsContext";
 import { ShowIconsProvider } from "@/contexts/ShowIconsContext";
@@ -62,15 +63,17 @@ export default function RootLayout() {
 	return (
 		<InvertColorsProvider>
 			<UnitsProvider>
-				<DetailsProvider>
-					<ShowIconsProvider>
-						<CurrentLocationProvider>
-							<HapticProvider>
-								<RootNavigation />
-							</HapticProvider>
-						</CurrentLocationProvider>
-					</ShowIconsProvider>
-				</DetailsProvider>
+				<TimeFormatProvider>
+					<DetailsProvider>
+						<ShowIconsProvider>
+							<CurrentLocationProvider>
+								<HapticProvider>
+									<RootNavigation />
+								</HapticProvider>
+							</CurrentLocationProvider>
+						</ShowIconsProvider>
+					</DetailsProvider>
+				</TimeFormatProvider>
 			</UnitsProvider>
 		</InvertColorsProvider>
 	);
