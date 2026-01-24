@@ -23,8 +23,15 @@ try {
 		const oldAndroidVersion = currentVersionMatch ? currentVersionMatch[1] : "unknown";
 
 		buildGradle = buildGradle.replace(/versionName\s+"[^"]*"/, `versionName "${version}"`);
+
+		const versionCodeMatch = buildGradle.match(/versionCode\s+(\d+)/);
+		const oldVersionCode = versionCodeMatch ? parseInt(versionCodeMatch[1], 10) : 0;
+		const newVersionCode = oldVersionCode + 1;
+		buildGradle = buildGradle.replace(/versionCode\s+\d+/, `versionCode ${newVersionCode}`);
+
 		fs.writeFileSync(buildGradlePath, buildGradle);
 		console.log(`Updated android/app/build.gradle: ${oldAndroidVersion} -> ${version}`);
+		console.log(`Bumped versionCode: ${oldVersionCode} -> ${newVersionCode}`);
 	} else {
 		console.log("android/app/build.gradle not found (run build first)");
 	}
