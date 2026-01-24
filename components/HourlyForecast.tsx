@@ -15,10 +15,11 @@ import { formatNumber } from "@/utils/numberFormatting";
 interface HourlyForecastProps {
 	hourlyData?: WeatherData["hourly"];
 	dailyData?: WeatherData["daily"];
-	selectedWeatherVariable: string;
+	selectedDetails: string[];
 }
 
 interface HourlyVariableData {
+	label: string;
 	value: string;
 	unit: string;
 	windAngle?: number;
@@ -35,80 +36,98 @@ const getVariableDataAndUnit = (
 	switch (variableName) {
 		case "Temp":
 			return {
+				label: "T:",
 				value: formatNumber(hourlyData.temperature2m[index], 0),
 				unit: "°",
 			};
 		case "Feels Like":
 			return {
+				label: "FL:",
 				value: formatNumber(hourlyData.apparentTemperature[index], 0),
 				unit: "°",
 			};
 		case "Precip Chance":
 			return {
+				label: "P:",
 				value: formatNumber(hourlyData.precipitationProbability[index], 0),
 				unit: "%",
 			};
 		case "Precip Amount":
 			return {
+				label: "P:",
 				value: formatNumber(hourlyData.precipitation[index], 2),
 				unit: precipitationUnit === "Millimeter" ? "mm" : "in",
 			};
 		case "Wind Speed":
 			return {
+				label: "W:",
 				value: formatNumber(hourlyData.windSpeed10m[index], 0),
 				unit: windSpeedUnit,
 				windAngle: hourlyData.windDirection10m[index],
 			};
 		case "Wind Gusts":
 			return {
+				label: "G:",
 				value: formatNumber(hourlyData.windGusts10m[index], 0),
 				unit: windSpeedUnit,
 			};
 		case "UV Index":
 			return {
+				label: "UV:",
 				value: formatNumber(hourlyData.uvIndex[index], 1),
 				unit: "",
 			};
 		case "Humidity":
 			return {
+				label: "H:",
 				value: formatNumber(hourlyData.relativeHumidity2m[index], 0),
 				unit: "%",
 			};
 		case "Dew Point":
 			return {
+				label: "DP:",
 				value: formatNumber(hourlyData.dewPoint2m[index], 0),
 				unit: "°",
 			};
 		case "Cloud Cover":
 			return {
+				label: "C:",
 				value: formatNumber(hourlyData.cloudCover[index], 0),
 				unit: "%",
 			};
 		case "Visibility":
 			return {
+				label: "V:",
 				value: formatNumber(hourlyData.visibility[index] / 1000, 1),
 				unit: "km",
 			};
 		case "Pressure":
 			return {
+				label: "P:",
 				value: formatNumber(hourlyData.surfacePressure[index], 0),
 				unit: "hPa",
 			};
 		default:
 			return {
+				label: "T:",
 				value: formatNumber(hourlyData.temperature2m[index], 0),
 				unit: "°",
 			};
 	}
 };
 
+interface DetailSegment {
+	text: string;
+	hasWindArrow: boolean;
+	windAngle?: number;
+	suffix: string;
+}
+
 interface HourlyItemProps {
 	time: Date;
 	weatherCode: number;
 	isDay: number;
-	value: string;
-	unit: string;
-	windAngle?: number;
+	detailSegments: DetailSegment[];
 	description: string;
 	invertColors: boolean;
 }
@@ -117,9 +136,7 @@ const HourlyItem = React.memo(function HourlyItem({
 	time,
 	weatherCode,
 	isDay,
-	value,
-	unit,
-	windAngle,
+	detailSegments,
 	description,
 	invertColors,
 }: HourlyItemProps) {
@@ -129,39 +146,53 @@ const HourlyItem = React.memo(function HourlyItem({
 	);
 
 	return (
-		<View style={styles.hourlyItem}>
-			<WeatherIconComponent
-				width={n(32)}
-				height={n(32)}
-				fill={invertColors ? "black" : "white"}
-			/>
-			<StyledText style={styles.hourlyText}>
+		<View style={styles.rowContainer}>
+			<StyledText style={styles.leftColumn}>
 				{time.toLocaleTimeString([], {
 					hour: "2-digit",
 					minute: "2-digit",
-					hour12: true,
+					hour12: false,
 					timeZone: "UTC",
 				})}
-				{" - "}
-				{description}
-				{", "}
-				{value}
-				{unit}
-				{typeof windAngle === "number" && (
-					<View
-						style={[
-							styles.windContainer,
-							{ transform: [{ rotate: `${windAngle}deg` }] },
-						]}
-					>
-						<IconDirectionUp
-							width={n(20)}
-							height={n(20)}
-							fill={invertColors ? "black" : "white"}
-						/>
-					</View>
-				)}
 			</StyledText>
+			<View style={styles.infoContainer}>
+				<View style={styles.firstLine}>
+					<WeatherIconComponent
+						width={n(32)}
+						height={n(32)}
+						fill={invertColors ? "black" : "white"}
+					/>
+					<StyledText style={styles.firstLineText}>{description}</StyledText>
+				</View>
+				<View style={styles.secondLine}>
+					{detailSegments.map((segment, idx) => (
+						<React.Fragment key={idx}>
+							<StyledText style={styles.secondLineText}>
+								{segment.text}
+							</StyledText>
+							{segment.hasWindArrow && typeof segment.windAngle === "number" && (
+								<View
+									style={[
+										styles.windContainer,
+										{ transform: [{ rotate: `${segment.windAngle}deg` }] },
+									]}
+								>
+									<IconDirectionUp
+										width={n(16)}
+										height={n(16)}
+										fill={invertColors ? "black" : "white"}
+									/>
+								</View>
+							)}
+							{segment.suffix && (
+								<StyledText style={styles.secondLineText}>
+									{segment.suffix}
+								</StyledText>
+							)}
+						</React.Fragment>
+					))}
+				</View>
+			</View>
 		</View>
 	);
 });
@@ -181,22 +212,25 @@ const SunEventItem = React.memo(function SunEventItem({
 	const label = isSunrise ? "Sunrise" : "Sunset";
 
 	return (
-		<View style={styles.hourlyItem}>
-			<IconComponent
-				width={n(32)}
-				height={n(32)}
-				fill={invertColors ? "black" : "white"}
-			/>
-			<StyledText style={styles.hourlyText}>
+		<View style={styles.sunEventRow}>
+			<StyledText style={styles.leftColumn}>
 				{time.toLocaleTimeString([], {
 					hour: "2-digit",
 					minute: "2-digit",
-					hour12: true,
+					hour12: false,
 					timeZone: "UTC",
 				})}
-				{" - "}
-				{label}
 			</StyledText>
+			<View style={styles.infoContainer}>
+				<View style={styles.firstLine}>
+					<IconComponent
+						width={n(32)}
+						height={n(32)}
+						fill={invertColors ? "black" : "white"}
+					/>
+					<StyledText style={styles.firstLineText}>{label}</StyledText>
+				</View>
+			</View>
 		</View>
 	);
 });
@@ -204,7 +238,7 @@ const SunEventItem = React.memo(function SunEventItem({
 const HourlyForecast = React.memo(function HourlyForecast({
 	hourlyData,
 	dailyData,
-	selectedWeatherVariable,
+	selectedDetails,
 }: HourlyForecastProps) {
 	const { invertColors } = useInvertColors();
 	const units = useUnits();
@@ -242,11 +276,28 @@ const HourlyForecast = React.memo(function HourlyForecast({
 					);
 				}
 
-				const { value, unit, windAngle } = getVariableDataAndUnit(
-					hourlyData,
-					selectedWeatherVariable,
-					index,
-					units
+				// Build detail segments for inline wind arrow placement
+				const detailSegments: DetailSegment[] = selectedDetails.map(
+					(detail, detailIdx) => {
+						const data = getVariableDataAndUnit(
+							hourlyData,
+							detail,
+							index,
+							units
+						);
+						const isLast = detailIdx === selectedDetails.length - 1;
+						const hasWindArrow =
+							detail === "Wind Speed" && data.windAngle !== undefined;
+						// Put comma after arrow, not before
+						const text = `${data.label} ${data.value}${data.unit}`;
+						const suffix = isLast ? "" : " • ";
+						return {
+							text,
+							hasWindArrow,
+							windAngle: data.windAngle,
+							suffix,
+						};
+					}
 				);
 
 				return (
@@ -255,9 +306,7 @@ const HourlyForecast = React.memo(function HourlyForecast({
 						time={hourlyData.time[index]}
 						weatherCode={hourlyData.weatherCode[index] as number}
 						isDay={hourlyData.isDay[index] as number}
-						value={value}
-						unit={unit}
-						windAngle={windAngle}
+						detailSegments={detailSegments}
 						description={getWeatherDescription(
 							hourlyData.weatherCode[index] as number
 						)}
@@ -272,15 +321,40 @@ const HourlyForecast = React.memo(function HourlyForecast({
 export default HourlyForecast;
 
 const styles = StyleSheet.create({
-	hourlyItem: {
+	rowContainer: {
+		flexDirection: "row",
+		alignItems: "flex-start",
+	},
+	sunEventRow: {
+		flexDirection: "row",
+		alignItems: "flex-start",
+		paddingVertical: n(12),
+	},
+	leftColumn: {
+		fontSize: n(26),
+		width: n(84),
+		paddingRight: n(8),
+	},
+	infoContainer: {
+		flex: 1,
+		paddingRight: n(10),
+	},
+	firstLine: {
 		flexDirection: "row",
 		alignItems: "center",
-		justifyContent: "flex-start",
-		paddingVertical: 0,
 	},
-	hourlyText: {
-		fontSize: n(19),
+	firstLineText: {
+		fontSize: n(26),
 		paddingLeft: n(8),
+	},
+	secondLine: {
+		flexDirection: "row",
+		alignItems: "center",
+		paddingBottom: n(6),
+	},
+	secondLineText: {
+		fontSize: n(16),
+		lineHeight: n(18),
 	},
 	windContainer: {
 		marginLeft: n(5),
@@ -288,7 +362,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	container: {
-		paddingTop: n(16),
+		paddingTop: n(32),
 	},
 	sectionTitle: {
 		fontSize: n(19),

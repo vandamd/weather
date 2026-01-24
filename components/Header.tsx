@@ -16,6 +16,7 @@ interface HeaderProps {
     rightIcon?: keyof typeof MaterialIcons.glyphMap;
     onRightIconPress?: () => void;
     showRightIcon?: boolean;
+    rightText?: string;
     onTitlePress?: () => void;
 }
 
@@ -28,6 +29,7 @@ export function Header({
     rightIcon,
     onRightIconPress,
     showRightIcon = true,
+    rightText,
     onTitlePress,
 }: HeaderProps) {
     const { invertColors } = useInvertColors();
@@ -70,6 +72,13 @@ export function Header({
     };
 
 	const renderRightButton = () => {
+		if (rightText) {
+			return (
+				<View style={styles.rightTextContainer}>
+					<StyledText style={styles.rightText}>{rightText}</StyledText>
+				</View>
+			);
+		}
 		if (rightIcon && showRightIcon) {
 			return (
 				<HapticPressable onPress={onRightIconPress}>
@@ -87,7 +96,7 @@ export function Header({
 	};
 
 	const hasLeftButton = !hideBackButton || Boolean(leftIcon);
-	const hasRightButton = Boolean(rightIcon && showRightIcon);
+	const hasRightButton = Boolean(rightText) || Boolean(rightIcon && showRightIcon);
 
 	return (
 		<View
@@ -156,5 +165,14 @@ const styles = StyleSheet.create({
         alignItems: "center",
         paddingTop: n(6),
         paddingRight: n(4),
+    },
+    rightTextContainer: {
+        minWidth: n(32),
+        height: n(32),
+        alignItems: "flex-end",
+        justifyContent: "center",
+    },
+    rightText: {
+        fontSize: n(18),
     },
 });

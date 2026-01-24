@@ -14,6 +14,7 @@ interface ContentContainerProps {
     rightIcon?: keyof typeof MaterialIcons.glyphMap;
     showRightIcon?: boolean;
     onRightIconPress?: () => void;
+    rightText?: string;
     onBackPress?: () => void;
     onTitlePress?: () => void;
     style?: StyleProp<ViewStyle>;
@@ -28,6 +29,7 @@ export default function ContentContainer({
     rightIcon,
     showRightIcon = true,
     onRightIconPress,
+    rightText,
     onBackPress,
     onTitlePress,
     style,
@@ -49,6 +51,7 @@ export default function ContentContainer({
                     rightIcon={rightIcon}
                     showRightIcon={showRightIcon}
                     onRightIconPress={onRightIconPress}
+                    rightText={rightText}
                     onBackPress={onBackPress}
                     onTitlePress={onTitlePress}
                 />

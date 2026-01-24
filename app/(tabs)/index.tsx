@@ -1,39 +1,17 @@
 import ContentContainer from "@/components/ContentContainer";
-import { useFocusEffect } from "expo-router";
-import { useCallback, useState, useEffect } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback } from "react";
 import { View } from "react-native";
 import CurrentSummary from "@/components/CurrentSummary";
 import HourlyForecast from "@/components/HourlyForecast";
 import WeeklyForecast from "@/components/WeeklyForecast";
-import WeatherVariableSelector from "@/components/WeatherVariableSelector";
 import CustomScrollView from "@/components/CustomScrollView";
 import { useCurrentLocation } from "@/contexts/CurrentLocationContext";
 import { useInvertColors } from "@/contexts/InvertColorsContext";
-
-/**
- * Format time difference for display
- */
-function formatTimeSince(timestamp: number): string {
-	const now = Date.now();
-	const diff = now - timestamp;
-
-	const seconds = Math.floor(diff / 1000);
-	const minutes = Math.floor(seconds / 60);
-	const hours = Math.floor(minutes / 60);
-	const days = Math.floor(hours / 24);
-
-	if (days > 0) {
-		return `${days}d ago`;
-	} else if (hours > 0) {
-		return `${hours}h ago`;
-	} else if (minutes > 0) {
-		return `${minutes}m ago`;
-	} else {
-		return "just now";
-	}
-}
+import { useDetails } from "@/contexts/DetailsContext";
 
 export default function CurrentLocationScreen() {
+	const router = useRouter();
 	const {
 		currentLocation,
 		weatherData,
@@ -43,28 +21,8 @@ export default function CurrentLocationScreen() {
 		refetchWeather,
 	} = useCurrentLocation();
 	const { invertColors } = useInvertColors();
-	const [selectedWeatherVariable, setSelectedWeatherVariable] =
-		useState<string>("Temp");
-	const [headerTitle, setHeaderTitle] = useState<string>(
-		currentLocation?.toString() || ""
-	);
-
-	// Update header with timestamp every minute
-	useEffect(() => {
-		const updateHeader = () => {
-			if (lastUpdated) {
-				const timeAgo = formatTimeSince(lastUpdated);
-				setHeaderTitle(`${currentLocation} (${timeAgo})`);
-			} else {
-				setHeaderTitle(currentLocation?.toString() || "");
-			}
-		};
-
-		updateHeader();
-		const interval = setInterval(updateHeader, 60000); // Update every minute
-
-		return () => clearInterval(interval);
-	}, [currentLocation, lastUpdated]);
+	const { selectedDetails } = useDetails();
+	const headerTitle = currentLocation?.toString() || "";
 
 	useFocusEffect(
 		useCallback(() => {
@@ -90,7 +48,13 @@ export default function CurrentLocationScreen() {
 	}
 
 	return weatherData ? (
-		<ContentContainer headerTitle={headerTitle} hideBackButton={true}>
+		<ContentContainer
+			headerTitle={headerTitle}
+			hideBackButton={true}
+			rightIcon="tune"
+			showRightIcon={true}
+			onRightIconPress={() => router.push("/settings/details")}
+		>
 			<CustomScrollView style={{ width: "100%" }} overScrollMode="never">
 				<CurrentSummary
 					currentTemperature={weatherData?.current.temperature2m ?? 0}
@@ -106,21 +70,24 @@ export default function CurrentLocationScreen() {
 					weatherCode={weatherData?.current.weatherCode ?? 0}
 					isDay={weatherData?.current.isDay ?? 0}
 				/>
-				<WeatherVariableSelector
-					onSelectionChange={setSelectedWeatherVariable}
-				/>
 				<HourlyForecast
 					hourlyData={weatherData?.hourly}
 					dailyData={weatherData?.daily}
-					selectedWeatherVariable={selectedWeatherVariable}
+					selectedDetails={selectedDetails}
 				/>
 				<WeeklyForecast
 					weeklyData={weatherData?.daily}
-					selectedWeatherVariable={selectedWeatherVariable}
+					selectedDetails={selectedDetails}
 				/>
 			</CustomScrollView>
 		</ContentContainer>
 	) : (
-		<ContentContainer headerTitle={headerTitle} hideBackButton={true}></ContentContainer>
+		<ContentContainer
+			headerTitle={headerTitle}
+			hideBackButton={true}
+			rightIcon="tune"
+			showRightIcon={true}
+			onRightIconPress={() => router.push("/settings/details")}
+		/>
 	);
 }

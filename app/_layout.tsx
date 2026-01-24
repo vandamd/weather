@@ -9,6 +9,7 @@ import {
 } from "@/contexts/InvertColorsContext";
 import { UnitsProvider } from "@/contexts/UnitsContext";
 import { CurrentLocationProvider } from "@/contexts/CurrentLocationContext";
+import { DetailsProvider } from "@/contexts/DetailsContext";
 import * as SystemUI from "expo-system-ui";
 import * as NavigationBar from "expo-navigation-bar";
 import * as SplashScreen from "expo-splash-screen";
@@ -60,11 +61,13 @@ export default function RootLayout() {
 	return (
 		<InvertColorsProvider>
 			<UnitsProvider>
-				<CurrentLocationProvider>
-					<HapticProvider>
-						<RootNavigation />
-					</HapticProvider>
-				</CurrentLocationProvider>
+				<DetailsProvider>
+					<CurrentLocationProvider>
+						<HapticProvider>
+							<RootNavigation />
+						</HapticProvider>
+					</CurrentLocationProvider>
+				</DetailsProvider>
 			</UnitsProvider>
 		</InvertColorsProvider>
 	);
