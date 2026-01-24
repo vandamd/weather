@@ -61,7 +61,7 @@ export default function SearchResultsScreen() {
 				longitude: location.longitude.toString(),
 				name: location.name,
 				admin1: location.admin1 ?? "",
-				country: iso311a2.getCountry(location.country_code),
+				country: iso311a2.getCountry(location.country_code) ?? location.country_code,
 				id: location.id.toString(),
 			},
 		});
