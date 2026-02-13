@@ -1,7 +1,7 @@
 {
 	"name": "weather",
 	"main": "expo-router/entry",
-	"version": "1.2.1",
+	"version": "1.2.2",
 	"scripts": {
 		"android": "expo run:android",
 		"sync-version": "node scripts/sync-version.js",
