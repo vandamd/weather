@@ -13,6 +13,7 @@ import Geolocation from "react-native-geolocation-service";
 import { getWeatherData, WeatherData } from "@/utils/weather";
 import { getAirQualityData, AirQualityData } from "@/utils/airQuality";
 import { useUnits } from "./UnitsContext";
+import { useMainLocation } from "./MainLocationContext";
 import {
 	getCachedWeather,
 	setCachedWeather,
@@ -23,6 +24,8 @@ import {
 	setCachedAirQuality,
 	isAirQualityCacheValid,
 } from "@/utils/airQualityCache";
+import { SavedLocation } from "@/utils/savedLocations";
+import { formatLocationName } from "@/utils/formatting";
 
 interface CurrentLocationContextType {
 	currentLocation: string;
@@ -46,12 +49,33 @@ const CurrentLocationContext = createContext<CurrentLocationContextType>({
 
 export const useCurrentLocation = () => useContext(CurrentLocationContext);
 
+const CURRENT_SOURCE_KEY = "current";
+const LOCATION_PERMISSION_DISABLED_MESSAGE =
+	"Location permission is off. Select a main page location in Settings or enable location in system settings.";
+
+function getSourceKey(location: SavedLocation | null): string {
+	if (!location) {
+		return CURRENT_SOURCE_KEY;
+	}
+
+	return `saved:${location.id}:${location.latitude}:${location.longitude}`;
+}
+
+function getLocationLabel(location: SavedLocation | null): string {
+	if (!location) {
+		return "Current Location";
+	}
+
+	return formatLocationName(location);
+}
+
 export const CurrentLocationProvider = ({
 	children,
 }: {
 	children: ReactNode;
 }) => {
 	const units = useUnits();
+	const { mainLocation, mainLocationLoaded } = useMainLocation();
 	const [currentLocation, setCurrentLocation] = useState<string>("");
 	const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
 	const [airQualityData, setAirQualityData] = useState<AirQualityData | null>(null);
@@ -60,29 +84,63 @@ export const CurrentLocationProvider = ({
 	const [lastUpdated, setLastUpdated] = useState<number | null>(null);
 	const appState = useRef(AppState.currentState);
 	const isFetchingRef = useRef(false);
+	const hasRequestedLocationPermissionRef = useRef(false);
+	const sourceKey = useMemo(() => getSourceKey(mainLocation), [mainLocation]);
+	const locationLabel = useMemo(
+		() => getLocationLabel(mainLocation),
+		[mainLocation]
+	);
+
+	const isCacheForCurrentSource = useCallback(
+		(cacheSourceKey?: string) => {
+			if (cacheSourceKey) {
+				return cacheSourceKey === sourceKey;
+			}
+			// Backward compatibility: old cache entries did not include sourceKey.
+			return !mainLocation;
+		},
+		[sourceKey, mainLocation]
+	);
 
 	useEffect(() => {
+		if (!mainLocationLoaded) {
+			return;
+		}
+
 		const loadCache = async () => {
 			const [cachedWeather, cachedAirQuality] = await Promise.all([
 				getCachedWeather(),
 				getCachedAirQuality(),
 			]);
-			if (cachedWeather) {
+
+			setCurrentLocation(locationLabel);
+			setErrorMsg(null);
+
+			if (cachedWeather && isCacheForCurrentSource(cachedWeather.sourceKey)) {
 				setWeatherData(cachedWeather.data);
 				setLastUpdated(cachedWeather.timestamp);
-				setCurrentLocation("Current Location");
 				setDataLoaded(true);
+			} else {
+				setWeatherData(null);
+				setLastUpdated(null);
+				setDataLoaded(false);
 			}
-			if (cachedAirQuality) {
+
+			if (
+				cachedAirQuality &&
+				isCacheForCurrentSource(cachedAirQuality.sourceKey)
+			) {
 				setAirQualityData(cachedAirQuality.data);
+			} else {
+				setAirQualityData(null);
 			}
 		};
 
 		loadCache();
-	}, []);
+	}, [mainLocationLoaded, locationLabel, isCacheForCurrentSource]);
 
 	const fetchLocationAndWeather = useCallback(async () => {
-		if (!units.unitsLoaded) {
+		if (!units.unitsLoaded || !mainLocationLoaded) {
 			return;
 		}
 
@@ -92,47 +150,79 @@ export const CurrentLocationProvider = ({
 		isFetchingRef.current = true;
 
 		try {
-			if (Platform.OS === "android") {
-				const granted = await PermissionsAndroid.request(
-					PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-					{
-						title: "Location Permission",
-						message: "This app needs access to your location to show local weather.",
-						buttonNeutral: "Ask Me Later",
-						buttonNegative: "Cancel",
-						buttonPositive: "OK",
+			let latitude: number;
+			let longitude: number;
+
+			if (mainLocation) {
+				latitude = mainLocation.latitude;
+				longitude = mainLocation.longitude;
+				setCurrentLocation(locationLabel);
+			} else {
+				if (Platform.OS === "android") {
+					const locationPermission =
+						PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION;
+					const hasLocationPermission = await PermissionsAndroid.check(
+						locationPermission
+					);
+
+					if (!hasLocationPermission) {
+						if (hasRequestedLocationPermissionRef.current) {
+							setWeatherData(null);
+							setAirQualityData(null);
+							setLastUpdated(null);
+							setErrorMsg(LOCATION_PERMISSION_DISABLED_MESSAGE);
+							return;
+						}
+
+						hasRequestedLocationPermissionRef.current = true;
+
+						const granted = await PermissionsAndroid.request(
+							locationPermission,
+							{
+								title: "Location Permission",
+								message: "This app needs access to your location to show local weather.",
+								buttonNeutral: "Ask Me Later",
+								buttonNegative: "Cancel",
+								buttonPositive: "OK",
+							}
+						);
+						if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+							setWeatherData(null);
+							setAirQualityData(null);
+							setLastUpdated(null);
+							setErrorMsg(LOCATION_PERMISSION_DISABLED_MESSAGE);
+							console.log("Location permission denied.");
+							return;
+						}
 					}
-				);
-				if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-					setErrorMsg("Permission to access location was denied");
-					console.log("Location permission denied.");
-					setDataLoaded(true);
-					isFetchingRef.current = false;
-					return;
 				}
+
+				const location = await new Promise<{
+					coords: { latitude: number; longitude: number };
+				}>((resolve, reject) => {
+					Geolocation.getCurrentPosition(
+						(position) => resolve(position),
+						(error) => reject(error),
+						{ enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+					);
+				});
+
+				latitude = location.coords.latitude;
+				longitude = location.coords.longitude;
+				setCurrentLocation("Current Location");
 			}
-
-			const location = await new Promise<{ coords: { latitude: number; longitude: number } }>((resolve, reject) => {
-				Geolocation.getCurrentPosition(
-					(position) => resolve(position),
-					(error) => reject(error),
-					{ enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-				);
-			});
-
-			setCurrentLocation("Current Location");
 
 			const [weatherResult, airQualityResult] = await Promise.all([
 				getWeatherData(
-					location.coords.latitude,
-					location.coords.longitude,
+					latitude,
+					longitude,
 					units.temperatureUnit,
 					units.windSpeedUnit,
 					units.precipitationUnit
 				),
 				getAirQualityData(
-					location.coords.latitude,
-					location.coords.longitude
+					latitude,
+					longitude
 				),
 			]);
 
@@ -145,8 +235,9 @@ export const CurrentLocationProvider = ({
 			if (weatherResult) {
 				cachePromises.push(
 					setCachedWeather(
-						location.coords.latitude,
-						location.coords.longitude,
+						latitude,
+						longitude,
+						sourceKey,
 						weatherResult
 					)
 				);
@@ -154,8 +245,9 @@ export const CurrentLocationProvider = ({
 			if (airQualityResult) {
 				cachePromises.push(
 					setCachedAirQuality(
-						location.coords.latitude,
-						location.coords.longitude,
+						latitude,
+						longitude,
+						sourceKey,
 						airQualityResult
 					)
 				);
@@ -181,13 +273,17 @@ export const CurrentLocationProvider = ({
 		units.windSpeedUnit,
 		units.precipitationUnit,
 		units.unitsLoaded,
+		mainLocation,
+		mainLocationLoaded,
+		locationLabel,
+		sourceKey,
 	]);
 
 	useEffect(() => {
-		if (units.unitsLoaded && !dataLoaded) {
+		if (units.unitsLoaded && mainLocationLoaded && !dataLoaded) {
 			fetchLocationAndWeather();
 		}
-	}, [units.unitsLoaded, dataLoaded, fetchLocationAndWeather]);
+	}, [units.unitsLoaded, mainLocationLoaded, dataLoaded, fetchLocationAndWeather]);
 
 	useEffect(() => {
 		const subscription = AppState.addEventListener(
@@ -201,7 +297,12 @@ export const CurrentLocationProvider = ({
 						isCacheValid(),
 						isAirQualityCacheValid(),
 					]);
-					if (!weatherCacheValid || !airQualityCacheValid) {
+					if (
+						!weatherData ||
+						!airQualityData ||
+						!weatherCacheValid ||
+						!airQualityCacheValid
+					) {
 						fetchLocationAndWeather();
 					}
 				}
@@ -213,7 +314,7 @@ export const CurrentLocationProvider = ({
 		return () => {
 			subscription.remove();
 		};
-	}, [fetchLocationAndWeather]);
+	}, [fetchLocationAndWeather, weatherData, airQualityData]);
 
 	const value = useMemo(
 		() => ({

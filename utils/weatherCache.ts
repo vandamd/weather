@@ -9,6 +9,7 @@ interface CachedWeatherData {
 	timestamp: number;
 	latitude: number;
 	longitude: number;
+	sourceKey?: string;
 }
 
 /**
@@ -41,6 +42,9 @@ function deserializeWeatherData(cached: CachedWeatherData): CachedWeatherData {
 export async function getCachedWeather(): Promise<{
 	data: WeatherData;
 	timestamp: number;
+	latitude: number;
+	longitude: number;
+	sourceKey?: string;
 } | null> {
 	try {
 		const cached = await AsyncStorage.getItem(CACHE_KEY);
@@ -52,6 +56,9 @@ export async function getCachedWeather(): Promise<{
 			return {
 				data: deserialized.data,
 				timestamp: deserialized.timestamp,
+				latitude: deserialized.latitude,
+				longitude: deserialized.longitude,
+				sourceKey: deserialized.sourceKey,
 			};
 		}
 
@@ -68,6 +75,7 @@ export async function getCachedWeather(): Promise<{
 export async function setCachedWeather(
 	latitude: number,
 	longitude: number,
+	sourceKey: string,
 	data: WeatherData
 ): Promise<void> {
 	try {
@@ -76,6 +84,7 @@ export async function setCachedWeather(
 			timestamp: Date.now(),
 			latitude,
 			longitude,
+			sourceKey,
 		};
 
 		await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(cacheEntry));

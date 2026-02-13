@@ -8,9 +8,15 @@ interface SelectorButtonProps {
     label: string;
     value: string;
     valueChangePage?: string;
+    valueNumberOfLines?: number;
 }
 
-export function SelectorButton({ label, value, valueChangePage }: SelectorButtonProps) {
+export function SelectorButton({
+    label,
+    value,
+    valueChangePage,
+    valueNumberOfLines,
+}: SelectorButtonProps) {
     return (
         <HapticPressable
             style={styles.button}
@@ -19,13 +25,20 @@ export function SelectorButton({ label, value, valueChangePage }: SelectorButton
             <StyledText style={styles.label} numberOfLines={1}>
                 {label}
             </StyledText>
-            <StyledText style={styles.value}>{value}</StyledText>
+            <StyledText
+                style={styles.value}
+                numberOfLines={valueNumberOfLines}
+                ellipsizeMode="tail"
+            >
+                {value}
+            </StyledText>
         </HapticPressable>
     );
 }
 
 const styles = StyleSheet.create({
     button: {
+        width: "100%",
         flexDirection: "column",
         justifyContent: "flex-start",
         alignItems: "flex-start",
@@ -37,6 +50,7 @@ const styles = StyleSheet.create({
         lineHeight: n(20),
     },
     value: {
+        width: "100%",
         fontSize: n(30),
         paddingBottom: n(10),
     },

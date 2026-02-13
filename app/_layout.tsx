@@ -12,6 +12,7 @@ import { TimeFormatProvider } from "@/contexts/TimeFormatContext";
 import { CurrentLocationProvider } from "@/contexts/CurrentLocationContext";
 import { DetailsProvider } from "@/contexts/DetailsContext";
 import { ShowIconsProvider } from "@/contexts/ShowIconsContext";
+import { MainLocationProvider } from "@/contexts/MainLocationContext";
 import * as SystemUI from "expo-system-ui";
 import * as NavigationBar from "expo-navigation-bar";
 import * as SplashScreen from "expo-splash-screen";
@@ -66,11 +67,13 @@ export default function RootLayout() {
 				<TimeFormatProvider>
 					<DetailsProvider>
 						<ShowIconsProvider>
-							<CurrentLocationProvider>
-								<HapticProvider>
-									<RootNavigation />
-								</HapticProvider>
-							</CurrentLocationProvider>
+							<MainLocationProvider>
+								<CurrentLocationProvider>
+									<HapticProvider>
+										<RootNavigation />
+									</HapticProvider>
+								</CurrentLocationProvider>
+							</MainLocationProvider>
 						</ShowIconsProvider>
 					</DetailsProvider>
 				</TimeFormatProvider>

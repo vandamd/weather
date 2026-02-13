@@ -9,6 +9,7 @@ interface CachedAirQualityData {
 	timestamp: number;
 	latitude: number;
 	longitude: number;
+	sourceKey?: string;
 }
 
 /**
@@ -27,6 +28,9 @@ function deserializeAirQualityData(
 export async function getCachedAirQuality(): Promise<{
 	data: AirQualityData;
 	timestamp: number;
+	latitude: number;
+	longitude: number;
+	sourceKey?: string;
 } | null> {
 	try {
 		const cached = await AsyncStorage.getItem(CACHE_KEY);
@@ -38,6 +42,9 @@ export async function getCachedAirQuality(): Promise<{
 			return {
 				data: deserialized.data,
 				timestamp: deserialized.timestamp,
+				latitude: deserialized.latitude,
+				longitude: deserialized.longitude,
+				sourceKey: deserialized.sourceKey,
 			};
 		}
 
@@ -54,6 +61,7 @@ export async function getCachedAirQuality(): Promise<{
 export async function setCachedAirQuality(
 	latitude: number,
 	longitude: number,
+	sourceKey: string,
 	data: AirQualityData
 ): Promise<void> {
 	try {
@@ -62,6 +70,7 @@ export async function setCachedAirQuality(
 			timestamp: Date.now(),
 			latitude,
 			longitude,
+			sourceKey,
 		};
 
 		await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(cacheEntry));
