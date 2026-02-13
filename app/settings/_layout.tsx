@@ -6,6 +6,7 @@ export default function SettingsLayout() {
 			<Stack.Screen name="temperature-unit" />
 			<Stack.Screen name="wind-speed-unit" />
 			<Stack.Screen name="precipitation-unit" />
+			<Stack.Screen name="main-page-location" />
 		</Stack>
 	);
 }

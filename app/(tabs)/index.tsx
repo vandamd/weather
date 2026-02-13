@@ -1,14 +1,16 @@
 import ContentContainer from "@/components/ContentContainer";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback } from "react";
-import { View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import CurrentSummary from "@/components/CurrentSummary";
 import HourlyForecast from "@/components/HourlyForecast";
 import WeeklyForecast from "@/components/WeeklyForecast";
 import CustomScrollView from "@/components/CustomScrollView";
+import { StyledText } from "@/components/StyledText";
 import { useCurrentLocation } from "@/contexts/CurrentLocationContext";
 import { useInvertColors } from "@/contexts/InvertColorsContext";
 import { useDetails } from "@/contexts/DetailsContext";
+import { n } from "@/utils/scaling";
 
 export default function CurrentLocationScreen() {
 	const router = useRouter();
@@ -16,6 +18,7 @@ export default function CurrentLocationScreen() {
 		currentLocation,
 		weatherData,
 		airQualityData,
+		errorMsg,
 		dataLoaded,
 		lastUpdated,
 		refetchWeather,
@@ -78,6 +81,30 @@ export default function CurrentLocationScreen() {
 					/>
 				</CustomScrollView>
 			)}
+			{!weatherData && errorMsg && (
+				<View style={styles.emptyState}>
+					<StyledText
+						style={[
+							styles.emptyStateText,
+							{ color: invertColors ? "black" : "white" },
+						]}
+					>
+						{errorMsg}
+					</StyledText>
+				</View>
+			)}
 		</ContentContainer>
 	);
 }
+
+const styles = StyleSheet.create({
+	emptyState: {
+		flex: 1,
+		width: "100%",
+		justifyContent: "center",
+	},
+	emptyStateText: {
+		fontSize: n(18),
+		textAlign: "center",
+	},
+});
